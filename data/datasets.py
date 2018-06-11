@@ -104,7 +104,62 @@ def normalize_dataset(X):
                     np.max(X_train[example, :, 3]) - np.min(X_train[example, :, 3]))
 
 
-def
+def ts_to_dataset_onecoin(data_df, win_size, stride, future, label_func, label_dummy_classes, return_target):
+    '''
+    Transform an input time series into a training dataset [ examples, time points back fatures (LSTM modules), frature dimension ],
+    Labels can be set to a different
+    '''
+    n = len(data_df)
+    num_examples = int((n - win_size) / stride) # how many times we can srtide via the timeseries (number of possible examples)
+
+    # (4968, 96, 1)
+    predictors = data_df.shape[1]  # make prediction based on multivatiate ts, price and volume
+
+    data_set = np.zeros([num_examples, win_size, predictors])
+    labels = np.zeros([num_examples, label_dummy_classes])
+    prices = np.zeros([num_examples, 1])
+
+    # form training examples by shifting triugh the dataset
+    for start_example in range(0, num_examples):
+        end_example = start_example + win_size
+
+        # form X aray
+        data_set[start_example, :, 0] = data_df[start_example:end_example]['price'].values.reshape([-1, 1])[:, 0]
+        data_set[start_example, :, 1] = data_df[start_example:end_example]['volume'].values.reshape([-1, 1])[:, 0]
+        data_set[start_example, :, 2] = data_df[start_example:end_example]['price_var'].values.reshape([-1, 1])[:, 0]
+        data_set[start_example, :, 3] = data_df[start_example:end_example]['volume_var'].values.reshape([-1, 1])[:, 0]
+        #TODO: ad blockchain info here
+
+
+        # get price for the prediction period and calculate its moments
+        future_prices = data_df[end_example:end_example + future]['price'].values
+
+        open_price = future_prices[0]
+        close_price = future_prices[-1]
+        price_return = close_price - open_price
+        percentage_return = 1 - (example_last_price - price_return) / example_last_price
+
+        labels[start_example, :] = label_func(label_dummy_classes)
+
+
+
+    return data_set, labels, prices
+
+
+
+def label_3class_return_target(label_dummy_classes)->int:
+
+    label = 0 if (abs(percentage_return) < return_target) else np.sign(percentage_return)
+
+    prices[start_example, :] = open_price
+
+    # 0 - same / 1 - up / 2 - down
+    if label == 0:
+        labels[start_example, 0] = 1
+    elif label == 1:
+        labels[start_example, 1] = 1
+    elif label == -1:
+        labels[start_example, 2] = 1
 
 
 
