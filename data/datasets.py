@@ -4,18 +4,19 @@ from data.data_sources import ittconnection
 from data.data_sources import get_raw_price, get_raw_volume
 
 
+# TODO: do it smarter (use keras function ot scipy) or use matrix multiplication
 def _normalize_dataset(X):
-    # TODO: do it smarte (use keras function ot scipy) or use matrix multiplication
     for example in range(X_train.shape[0]):
         X[example, :, 0] = (X[example, :, 0] - X[example, -1, 0]) / (np.max(X[example, :, 0]) - np.min(X[example, :, 0]))
         X[example, :, 1] = (X[example, :, 1] - X[example, -1, 1]) / (np.max(X[example, :, 1]) - np.min(X[example, :, 1]))
         X[example, :, 2] = (X[example, :, 2] - X[example, -1, 2]) / (np.max(X[example, :, 2]) - np.min(X[example, :, 2]))
         X[example, :, 3] = (X[example, :, 3] - X[example, -1, 3]) / (np.max(X[example, :, 3]) - np.min(X[example, :, 3]))
+    return X
 
 
-def ts_to_dataset_onecoin(data_df, win_size, stride, future, label_func, label_dummy_classes, return_target):
+def build_dataset_array_from_df(data_df, win_size, stride, label_func, future, return_target):
     '''
-    Transform an input time series into a training dataset [ examples, time points back fatures (LSTM modules), frature dimension ],
+    Transform an input ts into array [ examples, time points back fatures (LSTM modules), feature dimension ],
     Labels can be set to a different
     '''
     n = len(data_df)
@@ -46,7 +47,7 @@ def ts_to_dataset_onecoin(data_df, win_size, stride, future, label_func, label_d
         future_prices = data_df[end_example:end_example + future]['price']
 
         #build X array
-        labels[start_example, :] = label_func(future_prices, label_dummy_classes, return_target)
+        labels[start_example, :] = label_func(future_prices, return_target)
         # assert the array dimencions
 
 
@@ -54,12 +55,17 @@ def ts_to_dataset_onecoin(data_df, win_size, stride, future, label_func, label_d
 
 
 
-def label_3class_return_target(future_prices, label_dummy_classes, return_target):
+def label_3class_return_target(future_prices, return_target):
+    '''
+    calculate a dumy class number out of 90 future prices as 0 - same / 1 - up / 2 - down
+    '''
+
+    label_dummy_classes=3
+
     open_price = future_prices[0]
     close_price = future_prices[-1]
     price_return = close_price - open_price
     percentage_return = 1 - (open_price - price_return) / open_price
-
 
     label = 0 if (abs(percentage_return) < return_target) else np.sign(percentage_return)
 
@@ -73,11 +79,13 @@ def label_3class_return_target(future_prices, label_dummy_classes, return_target
     elif label == -1:
         dummy_labels[0, 2] = 1
 
-
     return dummy_labels
 
 
-def get_dataset_fused(COINS_LIST, db_name, res_period = '10min', win_size, future, return_target):
+def label_2class_return_target(future_prices, return_target):
+    pass
+
+def get_dataset_fused(COINS_LIST, db_name, res_period = '10min', win_size, future, return_target, label_func):
     '''
     Build the a full dataset X, Y by fusind all datasets of each coin from COIN_LIST
     - for each pair get ts of price and volume, calculate variance and build a df [time, price, vol, price_var, vol_var]
@@ -86,10 +94,11 @@ def get_dataset_fused(COINS_LIST, db_name, res_period = '10min', win_size, futur
     '''
     db_connection = ittconnection(db_name)
 
-    X = []
-    Y = []
+    X = []  # (147319, 200, 4) - 4 is price, volume, price_var, volume_var
+    Y = []  # (147319, 3)  - 3 is number of classes
 
     for transaction_coin, counter_coin in COINS_LIST:
+        # get raw ts from DB
         raw_price_ts = get_raw_price(db_connection, transaction_coin, counter_coin)
         raw_volume_ts = get_raw_volume(db_connection, transaction_coin, counter_coin)
 
@@ -104,12 +113,17 @@ def get_dataset_fused(COINS_LIST, db_name, res_period = '10min', win_size, futur
         data_ts['volume_var'] = raw_data_frame['volume'].resample(rule=res_period).var()
         data_ts = data_ts.interpolate()
 
-        X_train_one, Y_train_one, y_tr_price = ts_to_dataset_onecoin(data_df=data_ts,
-                                                                     win_size=win_size,
-                                                                     stride=1,
-                                                                     future=future,
-                                                                     delta=delta)
+        # convert this df into a array of shape of (147319, 200, 4) = (examples, time_back, features)
+        X_train_one, Y_train_one, y_tr_price = build_dataset_array_from_df(
+            data_df=data_ts,
+            win_size=win_size,
+            stride=1,
+            label_func=label_func,
+            future=future,
+            return_target=delta
+        )
 
+        # pile up into one array
         if X_train == []:
             X_train = X_train_one
             Y_train = Y_train_one
@@ -132,7 +146,8 @@ def get_dataset_fused(COINS_LIST, db_name, res_period = '10min', win_size, futur
     # TODO: shaffle dataset
 
     # normalize
-    _normalize_dataset(X_train)
+    # TODO: can I do it in-place?
+    X_train = _normalize_dataset(X_train)
 
     # sanity check
     for n in range(X_train.shape[0]):

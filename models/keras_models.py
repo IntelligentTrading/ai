@@ -7,29 +7,22 @@ from keras.optimizers import Adam, adagrad
 from keras import backend as K
 
 
-def lstm_model():
+def build_lstm_model(win_size_timesteps, data_dim,num_classes, layers_dict, lr):
     # expected input data shape: (batch_size, timesteps, data_dim)
+
     model = Sequential()
 
-    model.add(
-        LSTM(
-            90,
-            return_sequences=True,
-            input_shape=(timesteps, data_dim),
-            dropout=0.15
-        )
-    )  # returns a sequence of vectors of dimension 32
-
-    model.add(LSTM(64, return_sequences=True, dropout=0.15))
-
-    model.add(LSTM(32, return_sequences=True, dropout=0.15))
-
-    model.add(LSTM(16, dropout=0.15))  # return a single vector of dimension 32
+    for layer in layers_dict:
+        if layer['layer'] == 'input':
+            model.add(LSTM(layer['units'], return_sequences=True, input_shape=(win_size_timesteps, data_dim), dropout=layer['dropout']))
+        elif layer['layer'] == 'last':
+            model.add(LSTM(layer['units'], dropout=layer['dropout']))  # return a single vector of dimension 32
+        else:
+            model.add(LSTM(layer['units'], return_sequences=True, dropout=layer['dropout']))
 
     model.add(Dense(num_classes, activation='softmax'))
 
-
-    optimizer = adagrad(lr=0.0005)
+    optimizer = adagrad(lr)
 
     start = time.time()
     model.compile(
@@ -38,4 +31,6 @@ def lstm_model():
         metrics=['accuracy']
     )
     print("> Compilation Time : ", time.time() - start)
+    print(model.sumary())
+
     return model
