@@ -30,7 +30,9 @@ def single_run(TRAIN_COINS_LIST, win_size, future, return_target, label_func, da
         epochs=epochs,
         validation_split=0.15)
 
-    model.save('lstm_model.h5')
+    #model.save('lstm_model.h5')
+
+    #TODO: add prediction and performance metrics here
 
 
 
@@ -47,8 +49,8 @@ if __name__ == '__main__':
     # list all coin pairs for the training set
     TRAIN_COINS_LIST = [('BTC', 2), ('ETH', 2), ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)]
 
-    win_size = 288
-    future = 18
+    win_size = 288  # 48h back
+    future = 18  # 3h forward
     return_target = 0.02
     data_dim = 4
 
@@ -87,7 +89,12 @@ if __name__ == '__main__':
 
 
 
-# TODO: try to learn for manipulation detection.. BTC is clearly manipulated, try to detect this event (Orders? )
+# TODO:
+# - leave what I have as price_direction_indicator, with two classes and make them balanced (undersampling? adjusting delta?)
+#    - so we can build a signal as indicator changed from - to +
+# - add one more ANN which is a signal by itself, with anomaly detection approach with NN
+
+# - try to learn for market manipulation detection.. BTC is clearly manipulated, try to detect this event (Orders? )
 
 
 
