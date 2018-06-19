@@ -6,7 +6,6 @@ from artemis.experiments import ExperimentFunction
 
 #@ExperimentFunction
 def single_run(TRAIN_COINS_LIST, win_size, future, return_target, label_func, data_dim, num_classes, lstm_layers, lr, batch_size, epochs):
-
     # build a dataset for training
     X_train, Y_train = get_dataset_fused(
         TRAIN_COINS_LIST,
@@ -18,8 +17,7 @@ def single_run(TRAIN_COINS_LIST, win_size, future, return_target, label_func, da
         label_func=label_func,
         num_classes=num_classes
     )
-    print(X_train.shape)
-    print(Y_train.shape)
+
 
     # build a model
     model = build_lstm_model(win_size, data_dim, num_classes, lstm_layers, lr)
@@ -51,8 +49,8 @@ if __name__ == '__main__':
     TRAIN_COINS_LIST = [('BTC', 2)]
 
     win_size = 288  # 48h back
-    future = 18  # 3h forward
-    return_target = 0.01
+    future = 24  # 4h forward
+    return_target = 0.007
     data_dim = 4
 
     label_func = 'label_3class_return_target'
@@ -81,7 +79,8 @@ if __name__ == '__main__':
         lstm_layers,
         lr,
         batch_size,
-        epochs)
+        epochs
+    )
 
     # demo_drunkards_walk.browse()
     # Try

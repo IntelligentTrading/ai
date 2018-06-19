@@ -56,7 +56,7 @@ def build_dataset_array_from_df(data_df, win_size, stride, label_func, num_class
         labels[start_example, :] = func_obj(future_prices, return_target)
         # assert the array dimencions
 
-        if start_example % 5000 == 0:
+        if start_example % 10000 == 0:
             print("... processed examples: " + str(start_example))
 
     return data_set, labels, prices
@@ -158,7 +158,7 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     X = np.delete(X, (idx2delete), axis=0)
     Y = np.delete(Y, (idx2delete), axis=0)
 
-    print("... same= " + str(sum(Y[:,0])) + ' | UP= ' + str(sum(Y[:,1])) + ' | DOWN= ' + str(sum(Y[:,2])))
+    print("> done: same= " + str(sum(Y[:,0])) + ' | UP= ' + str(sum(Y[:,1])) + ' | DOWN= ' + str(sum(Y[:,2])))
 
     # TODO: shaffle dataset
 
@@ -167,9 +167,12 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     X = _normalize_dataset(X)
 
     # sanity check
-    for n in range(X_train.shape[0]):
-        if np.isnan(X_train[n, :, :]).any():
+    print(" Checking for NaN in dataset...")
+    for n in range(X.shape[0]):
+        if np.isnan(X[n, :, :]).any():
             print(n)
 
-    print(X_train.shape)
-    print(Y_train.shape)
+    print("X dataset shape: " + str(X.shape))
+    print("Y dataset shape: " + str(Y.shape))
+
+    return X, Y
