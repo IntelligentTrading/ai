@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import importlib
 from data.data_sources import ittconnection
 from data.data_sources import get_raw_price, get_raw_volume
 
@@ -14,7 +15,7 @@ def _normalize_dataset(X):
     return X
 
 
-def build_dataset_array_from_df(data_df, win_size, stride, label_func, future, return_target):
+def build_dataset_array_from_df(data_df, win_size, stride, label_func, num_classes, future, return_target):
     '''
     Transform an input ts into array [ examples, time points back fatures (LSTM modules), feature dimension ],
     Labels can be set to a different
@@ -24,12 +25,14 @@ def build_dataset_array_from_df(data_df, win_size, stride, label_func, future, r
 
     # (4968, 96, 1)
     predictors = data_df.shape[1]  # make prediction based on multivatiate ts, price and volume
+    label_dummy_classes = num_classes
 
     data_set = np.zeros([num_examples, win_size, predictors])
     labels = np.zeros([num_examples, label_dummy_classes])
     prices = np.zeros([num_examples, 1])
 
     # form training examples by shifting triugh the dataset
+    print(">Start to form dataset of " + str(num_examples) + " examples")
     for start_example in range(0, num_examples):
         end_example = start_example + win_size
 
@@ -38,7 +41,7 @@ def build_dataset_array_from_df(data_df, win_size, stride, label_func, future, r
         data_set[start_example, :, 1] = data_df[start_example:end_example]['volume'].values.reshape([-1, 1])[:, 0]
         data_set[start_example, :, 2] = data_df[start_example:end_example]['price_var'].values.reshape([-1, 1])[:, 0]
         data_set[start_example, :, 3] = data_df[start_example:end_example]['volume_var'].values.reshape([-1, 1])[:, 0]
-        #TODO: ad blockchain info here
+        #TODO: add blockchain info here
 
         # assert X dimensions
 
@@ -47,9 +50,14 @@ def build_dataset_array_from_df(data_df, win_size, stride, label_func, future, r
         future_prices = data_df[end_example:end_example + future]['price']
 
         #build X array
-        labels[start_example, :] = label_func(future_prices, return_target)
+        module = importlib.import_module('data.datasets')
+        func_obj = getattr(module, label_func)
+
+        labels[start_example, :] = func_obj(future_prices, return_target)
         # assert the array dimencions
 
+        if start_example % 5000 == 0:
+            print("... processed examples: " + str(start_example))
 
     return data_set, labels, prices
 
@@ -57,7 +65,7 @@ def build_dataset_array_from_df(data_df, win_size, stride, label_func, future, r
 
 def label_3class_return_target(future_prices, return_target):
     '''
-    calculate a dumy class number out of 90 future prices as 0 - same / 1 - up / 2 - down
+    calculate a dummy class number out of 90 future prices as 0 - same / 1 - up / 2 - down
     '''
 
     label_dummy_classes=3
@@ -85,22 +93,26 @@ def label_3class_return_target(future_prices, return_target):
 def label_2class_return_target(future_prices, return_target):
     pass
 
-def get_dataset_fused(COINS_LIST, db_name, res_period = '10min', win_size, future, return_target, label_func):
+
+def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_target, label_func, num_classes):
     '''
     Build the a full dataset X, Y by fusind all datasets of each coin from COIN_LIST
     - for each pair get ts of price and volume, calculate variance and build a df [time, price, vol, price_var, vol_var]
     - split this ts into pieces of win_size ad calculate a label for each
     - pile them up int one dataset
     '''
-    db_connection = ittconnection(db_name)
+    #db_connection = ittconnection(db_name)
 
     X = []  # (147319, 200, 4) - 4 is price, volume, price_var, volume_var
     Y = []  # (147319, 3)  - 3 is number of classes
 
     for transaction_coin, counter_coin in COINS_LIST:
         # get raw ts from DB
-        raw_price_ts = get_raw_price(db_connection, transaction_coin, counter_coin)
-        raw_volume_ts = get_raw_volume(db_connection, transaction_coin, counter_coin)
+        #raw_price_ts = get_raw_price(db_connection, transaction_coin, counter_coin)
+        #raw_volume_ts = get_raw_volume(db_connection, transaction_coin, counter_coin) #
+
+        raw_price_ts = pd.read_pickle("./raw_price.pkl")
+        raw_volume_ts=pd.read_pickle("./raw_volume.pkl")
 
         # merge because the timestamps must match, and merge left because price shall have a priority
         raw_data_frame = pd.merge(raw_price_ts, raw_volume_ts, how='left', left_index=True, right_index=True)
@@ -108,7 +120,7 @@ def get_dataset_fused(COINS_LIST, db_name, res_period = '10min', win_size, futur
         raw_data_frame[pd.isnull(raw_data_frame)] = None
 
         # add variance, resample (for smoothing)
-        data_ts = raw_data_frame.resample(rule=res_period).mean()
+        data_ts = raw_data_frame.resample(rule=res_period).mean()  #todo: max?
         data_ts['price_var'] = raw_data_frame['price'].resample(rule=res_period).var()
         data_ts['volume_var'] = raw_data_frame['volume'].resample(rule=res_period).var()
         data_ts = data_ts.interpolate()
@@ -119,29 +131,32 @@ def get_dataset_fused(COINS_LIST, db_name, res_period = '10min', win_size, futur
             win_size=win_size,
             stride=1,
             label_func=label_func,
+            num_classes=num_classes,
             future=future,
-            return_target=delta
+            return_target=return_target
         )
 
         # pile up into one array
-        if X_train == []:
-            X_train = X_train_one
-            Y_train = Y_train_one
+        if X == []:
+            X = X_train_one
+            Y = Y_train_one
         else:
-            X_train = np.concatenate((X_train, X_train_one), axis=0)
-            Y_train = np.concatenate((Y_train, Y_train_one), axis=0)
+            X = np.concatenate((X, X_train_one), axis=0)
+            Y = np.concatenate((Y, Y_train_one), axis=0)
 
         del raw_price_ts, raw_volume_ts, raw_data_frame
 
-    db_connection.close()
+    #db_connection.close()
 
     # delete all examples with NaN inside
     idx2delete = []
-    for n in range(X_train.shape[0] - 1):
-        if np.isnan(X_train[n, :, :]).any():
+    for n in range(X.shape[0] - 1):
+        if np.isnan(X[n, :, :]).any():
             idx2delete.append(n)
-    X_train = np.delete(X_train, (idx2delete), axis=0)
-    Y_train = np.delete(Y_train, (idx2delete), axis=0)
+    X = np.delete(X, (idx2delete), axis=0)
+    Y = np.delete(Y, (idx2delete), axis=0)
+
+    print("... same= " + str(sum(Y[0,:])) + ' | UP= ' + str(sum(Y[1,:])) )
 
     # TODO: shaffle dataset
 

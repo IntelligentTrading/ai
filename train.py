@@ -4,7 +4,7 @@ from models.keras_models import build_lstm_model
 from artemis.experiments import ExperimentFunction
 
 
-@ExperimentFunction
+#@ExperimentFunction
 def single_run(TRAIN_COINS_LIST, win_size, future, return_target, label_func, data_dim, num_classes, lstm_layers, lr, batch_size, epochs):
 
     # build a dataset for training
@@ -15,7 +15,8 @@ def single_run(TRAIN_COINS_LIST, win_size, future, return_target, label_func, da
         win_size=win_size,
         future=future,
         return_target=return_target,
-        label_func=label_func
+        label_func=label_func,
+        num_classes=num_classes
     )
     print(X_train.shape)
     print(Y_train.shape)
@@ -47,14 +48,14 @@ if __name__ == '__main__':
 
     ####################### parameters of the dataset and model
     # list all coin pairs for the training set
-    TRAIN_COINS_LIST = [('BTC', 2), ('ETH', 2), ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)]
+    TRAIN_COINS_LIST = [('BTC', 2)]
 
     win_size = 288  # 48h back
     future = 18  # 3h forward
     return_target = 0.02
     data_dim = 4
 
-    label_func = label_3class_return_target()
+    label_func = 'label_3class_return_target'
     num_classes = 3
 
     lstm_layers = [
@@ -64,7 +65,10 @@ if __name__ == '__main__':
         {'layer':'last',  'units':16, 'dropout':0.15}
     ]
     lr = 0.0005
+    batch_size = 7000
+    epochs = 40
     ###############################
+
 
     single_run(
         TRAIN_COINS_LIST,
@@ -77,8 +81,7 @@ if __name__ == '__main__':
         lstm_layers,
         lr,
         batch_size,
-        epochs
-    )
+        epochs)
 
     # demo_drunkards_walk.browse()
     # Try
