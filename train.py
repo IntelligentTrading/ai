@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     win_size = 288  # 48h back
     future = 18  # 3h forward
-    return_target = 0.02
+    return_target = 0.01
     data_dim = 4
 
     label_func = 'label_3class_return_target'
