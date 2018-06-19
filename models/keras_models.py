@@ -31,6 +31,6 @@ def build_lstm_model(win_size_timesteps, data_dim,num_classes, layers_dict, lr):
         metrics=['accuracy']
     )
     print("> Compilation Time : ", time.time() - start)
-    print(model.sumary())
+    print(model.summary())
 
     return model
