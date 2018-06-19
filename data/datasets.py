@@ -7,7 +7,7 @@ from data.data_sources import get_raw_price, get_raw_volume
 
 # TODO: do it smarter (use keras function ot scipy) or use matrix multiplication
 def _normalize_dataset(X):
-    for example in range(X_train.shape[0]):
+    for example in range(X.shape[0]):
         X[example, :, 0] = (X[example, :, 0] - X[example, -1, 0]) / (np.max(X[example, :, 0]) - np.min(X[example, :, 0]))
         X[example, :, 1] = (X[example, :, 1] - X[example, -1, 1]) / (np.max(X[example, :, 1]) - np.min(X[example, :, 1]))
         X[example, :, 2] = (X[example, :, 2] - X[example, -1, 2]) / (np.max(X[example, :, 2]) - np.min(X[example, :, 2]))
@@ -109,7 +109,9 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     for transaction_coin, counter_coin in COINS_LIST:
         # get raw ts from DB
         #raw_price_ts = get_raw_price(db_connection, transaction_coin, counter_coin)
-        #raw_volume_ts = get_raw_volume(db_connection, transaction_coin, counter_coin) #
+        #raw_volume_ts = get_raw_volume(db_connection, transaction_coin, counter_coin)
+        #raw_price_ts.to_pickle("./raw_price.pkl")
+        #raw_volume_ts.to_pickle("./raw_volume.pkl")
 
         raw_price_ts = pd.read_pickle("./raw_price.pkl")
         raw_volume_ts=pd.read_pickle("./raw_volume.pkl")
@@ -156,13 +158,13 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     X = np.delete(X, (idx2delete), axis=0)
     Y = np.delete(Y, (idx2delete), axis=0)
 
-    print("... same= " + str(sum(Y[0,:])) + ' | UP= ' + str(sum(Y[1,:])) )
+    print("... same= " + str(sum(Y[:,0])) + ' | UP= ' + str(sum(Y[:,1])) + ' | DOWN= ' + str(sum(Y[:,2])))
 
     # TODO: shaffle dataset
 
     # normalize
     # TODO: can I do it in-place?
-    X_train = _normalize_dataset(X_train)
+    X = _normalize_dataset(X)
 
     # sanity check
     for n in range(X_train.shape[0]):
