@@ -3,7 +3,7 @@ from mysql.connector import errorcode
 import pandas as pd
 import numpy as np
 
-def ittconnection(DATABASE='prodcopy'):
+def _ittconnection(DATABASE='prodcopy'):
     if DATABASE == 'prod':
         config = {
             'user': 'alienbaby',
@@ -66,35 +66,50 @@ def ittconnection(DATABASE='prodcopy'):
 
 
 
-def get_raw_price(db_connection, transaction_coin, counter_coin):
+def _get_raw_price(db_connection, transaction_coin, counter_coin):
     query = "SELECT * FROM indicator_price WHERE transaction_currency='%s' AND counter_currency=%d "
     query = query % (transaction_coin, counter_coin)
     df_sql = pd.read_sql(query, con=db_connection)
     df_sql['timestamp'] = pd.to_datetime(df_sql['timestamp'], unit='s')
     df_sql.index = pd.DatetimeIndex(df_sql.timestamp)
-
     return df_sql["price"].to_frame()
 
 
-def get_raw_volume(db_connection, transaction_coin, counter_coin):
+def _get_raw_volume(db_connection, transaction_coin, counter_coin):
     query = "SELECT * FROM indicator_volume WHERE transaction_currency='%s' AND counter_currency=%d "
     query = query % (transaction_coin, counter_coin)
     df_sql = pd.read_sql(query, con=db_connection)
     df_sql['timestamp'] = pd.to_datetime(df_sql['timestamp'], unit='s')
     df_sql.index = pd.DatetimeIndex(df_sql.timestamp)
-
     return df_sql["volume"].to_frame()
 
 
-def resample_and_clean(raw_data_frame, resample_pariod='10min'):
-    #todo: may be close price, not mean?
-    data_ts = raw_data_frame.resample(rule=resample_pariod).mean()
-    data_ts['variance'] = raw_data_frame['price'].resample(rule=resample_pariod).var()
-
-    data_ts = data_ts.interpolate()
-    #todo: more clever NA handling
-
-    return data_ts
-
-def get_raw_blockchain_data():
+def _get_raw_blockchain_data():
     pass
+
+def get_combined_cleaned_df(transaction_coin, counter_coin, res_period):
+    # get raw ts from DB
+    # db_connection = _ittconnection(db_name)
+    # raw_price_ts = _get_raw_price(db_connection, transaction_coin, counter_coin)
+    # raw_volume_ts = _get_raw_volume(db_connection, transaction_coin, counter_coin)
+    # raw_price_ts.to_pickle("./raw_price.pkl")
+    # raw_volume_ts.to_pickle("./raw_volume.pkl")
+    # db_connection.close()
+
+    raw_price_ts = pd.read_pickle("./raw_price.pkl")
+    raw_volume_ts = pd.read_pickle("./raw_volume.pkl")
+
+    # merge because the timestamps must match, and merge left because price shall have a priority
+    raw_data_frame = pd.merge(raw_price_ts, raw_volume_ts, how='left', left_index=True, right_index=True)
+    print('Shape of ' + transaction_coin + str(raw_data_frame.shape))
+    raw_data_frame[pd.isnull(raw_data_frame)] = None
+
+    # add variance, resample (for smoothing)
+    data_df = raw_data_frame.resample(rule=res_period).mean()  # todo: max?
+    data_df['price_var'] = raw_data_frame['price'].resample(rule=res_period).var()
+    data_df['volume_var'] = raw_data_frame['volume'].resample(rule=res_period).var()
+    data_df = data_df.interpolate()
+
+    del raw_price_ts, raw_volume_ts, raw_data_frame
+
+    return data_df

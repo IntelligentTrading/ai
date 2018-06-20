@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 import importlib
-from data.data_sources import ittconnection
-from data.data_sources import get_raw_price, get_raw_volume
+from data.data_sources import get_combined_cleaned_df
 
 
 # TODO: do it smarter (use keras function ot scipy) or use matrix multiplication
@@ -15,7 +14,7 @@ def _normalize_dataset(X):
     return X
 
 
-def build_dataset_array_from_df(data_df, win_size, stride, label_func, num_classes, future, return_target):
+def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, future, return_target):
     '''
     Transform an input ts into array [ examples, time points back fatures (LSTM modules), feature dimension ],
     Labels can be set to a different
@@ -29,7 +28,7 @@ def build_dataset_array_from_df(data_df, win_size, stride, label_func, num_class
 
     data_set = np.zeros([num_examples, win_size, predictors])
     labels = np.zeros([num_examples, label_dummy_classes])
-    prices = np.zeros([num_examples, 1])
+    #prices = np.zeros([num_examples, 1])
 
     # form training examples by shifting triugh the dataset
     print(">Start to form dataset of " + str(num_examples) + " examples")
@@ -46,7 +45,7 @@ def build_dataset_array_from_df(data_df, win_size, stride, label_func, num_class
         # assert X dimensions
 
         # get price for the prediction period and calculate its moments
-        prices = data_set[start_example, :, 0]  #todo     prices[start_example, :] = open_price
+        #prices = data_set[start_example, :, 0]
         future_prices = data_df[end_example:end_example + future]['price']
 
         #build X array
@@ -59,7 +58,7 @@ def build_dataset_array_from_df(data_df, win_size, stride, label_func, num_class
         if start_example % 10000 == 0:
             print("... processed examples: " + str(start_example))
 
-    return data_set, labels, prices
+    return data_set, labels
 
 
 
@@ -101,35 +100,18 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     - split this ts into pieces of win_size ad calculate a label for each
     - pile them up int one dataset
     '''
-    #db_connection = ittconnection(db_name)
 
     X = []  # (147319, 200, 4) - 4 is price, volume, price_var, volume_var
     Y = []  # (147319, 3)  - 3 is number of classes
 
     for transaction_coin, counter_coin in COINS_LIST:
-        # get raw ts from DB
-        #raw_price_ts = get_raw_price(db_connection, transaction_coin, counter_coin)
-        #raw_volume_ts = get_raw_volume(db_connection, transaction_coin, counter_coin)
-        #raw_price_ts.to_pickle("./raw_price.pkl")
-        #raw_volume_ts.to_pickle("./raw_volume.pkl")
 
-        raw_price_ts = pd.read_pickle("./raw_price.pkl")
-        raw_volume_ts=pd.read_pickle("./raw_volume.pkl")
-
-        # merge because the timestamps must match, and merge left because price shall have a priority
-        raw_data_frame = pd.merge(raw_price_ts, raw_volume_ts, how='left', left_index=True, right_index=True)
-        print('Shape of ' + transaction_coin + str(raw_data_frame.shape))
-        raw_data_frame[pd.isnull(raw_data_frame)] = None
-
-        # add variance, resample (for smoothing)
-        data_ts = raw_data_frame.resample(rule=res_period).mean()  #todo: max?
-        data_ts['price_var'] = raw_data_frame['price'].resample(rule=res_period).var()
-        data_ts['volume_var'] = raw_data_frame['volume'].resample(rule=res_period).var()
-        data_ts = data_ts.interpolate()
+        # retrieve a time series df from DB as [time,price,volume, price_var, volume_var]
+        data_df = get_combined_cleaned_df(transaction_coin, counter_coin, res_period)
 
         # convert this df into a array of shape of (147319, 200, 4) = (examples, time_back, features)
-        X_train_one, Y_train_one, y_tr_price = build_dataset_array_from_df(
-            data_df=data_ts,
+        X_train_one, Y_train_one = one_coin_array_from_df(
+            data_df=data_df,
             win_size=win_size,
             stride=1,
             label_func=label_func,
@@ -137,6 +119,7 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
             future=future,
             return_target=return_target
         )
+        del data_df
 
         # pile up into one array
         if X == []:
@@ -146,9 +129,9 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
             X = np.concatenate((X, X_train_one), axis=0)
             Y = np.concatenate((Y, Y_train_one), axis=0)
 
-        del raw_price_ts, raw_volume_ts, raw_data_frame
 
-    #db_connection.close()
+
+
 
     # delete all examples with NaN inside
     idx2delete = []
