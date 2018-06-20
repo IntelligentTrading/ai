@@ -1,6 +1,6 @@
 import tensorflow as tf
 import keras
-from models.keras_models import build_lstm_model
+from models.keras_models import build_lstm_model, predict_point_by_point
 from artemis.experiments import ExperimentFunction
 from data.data_sources import get_combined_cleaned_df
 from data.datasets import one_coin_array_from_df, get_dataset_fused
@@ -51,8 +51,8 @@ def single_run(TRAIN_COINS_LIST, res_period, win_size, future, return_target, la
 
 
 if __name__ == '__main__':
-    print(tf.__version__)
-    print(keras.__version__)
+    print("   TensorFlow = " + tf.__version__)
+    print("   Keras = " + keras.__version__)
 
     # train ANN for short period (future= 3 periods = 6 h), 288=48h back
     # TODO: try to balance classes
@@ -78,8 +78,8 @@ if __name__ == '__main__':
         {'layer':'last',  'units':16, 'dropout':0.15}
     ]
     lr = 0.0005
-    batch_size = 1000
-    epochs = 1
+    batch_size = 512  # might be up to 7000 if enough memory and GPU
+    epochs = 3
     ###############################
 
 

@@ -1,8 +1,7 @@
 import time
 from keras.models import load_model, Model, Sequential
 from keras.layers import Dense, Activation, Dropout, Input, LSTM, Reshape, Lambda, RepeatVector
-#from keras.initializers import glorot_uniform
-#from keras.utils import to_categorical
+from keras import metrics
 from keras.optimizers import Adam, adagrad
 from keras import backend as K
 
@@ -52,7 +51,7 @@ def build_lstm_model(win_size_timesteps, data_dim,num_classes, layers_dict, lr):
     model.compile(
         loss='categorical_crossentropy',
         optimizer=optimizer,
-        metrics=['accuracy', f1_score]
+        metrics=['accuracy', metrics.categorical_accuracy]
     )
     print("> Compilation Time : ", time.time() - start)
     print(model.summary())
