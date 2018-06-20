@@ -25,7 +25,7 @@ def single_run(TRAIN_COINS_LIST, win_size, future, return_target, label_func, da
     history = model.fit(
         X_train,
         Y_train,
-        batch_size=7000,
+        batch_size=batch_size,
         epochs=epochs,
         validation_split=0.15)
 
@@ -57,14 +57,14 @@ if __name__ == '__main__':
     num_classes = 3
 
     lstm_layers = [
-        {'layer':'input', 'units':100, 'dropout':0.15},
-        {'layer':'l2',    'units':64, 'dropout':0.15},
-        {'layer':'l3',    'units':32, 'dropout':0.15},
+        {'layer':'input', 'units':50, 'dropout':0.15},
+        {'layer':'l2',    'units':25, 'dropout':0.15},
+        #{'layer':'l3',    'units':32, 'dropout':0.15},
         {'layer':'last',  'units':16, 'dropout':0.15}
     ]
     lr = 0.0005
-    batch_size = 7000
-    epochs = 40
+    batch_size = 1000
+    epochs = 1
     ###############################
 
 
