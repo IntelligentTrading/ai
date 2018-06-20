@@ -1,16 +1,19 @@
-
-from data.datasets import build_dataset_array_from_df, get_dataset_fused
+import tensorflow as tf
+import keras
 from models.keras_models import build_lstm_model
 from artemis.experiments import ExperimentFunction
+from data.data_sources import get_combined_cleaned_df
+from data.datasets import one_coin_array_from_df, get_dataset_fused
+from utils.plotting import plot_model_metrics
 
 
 #@ExperimentFunction
-def single_run(TRAIN_COINS_LIST, win_size, future, return_target, label_func, data_dim, num_classes, lstm_layers, lr, batch_size, epochs):
+def single_run(TRAIN_COINS_LIST, res_period, win_size, future, return_target, label_func, data_dim, num_classes, lstm_layers, lr, batch_size, epochs):
     # build a dataset for training
     X_train, Y_train = get_dataset_fused(
         TRAIN_COINS_LIST,
         'prodcopy',
-        res_period='10min',
+        res_period=res_period,
         win_size=win_size,
         future=future,
         return_target=return_target,
@@ -18,10 +21,14 @@ def single_run(TRAIN_COINS_LIST, win_size, future, return_target, label_func, da
         num_classes=num_classes
     )
 
+    # set a validation ts (BTC/2 here, can be changed)
+    valid_data_df = get_combined_cleaned_df(transaction_coin='BTC', counter_coin=2, res_period=res_period)
+    valid_price_array = valid_data_df['price'].values
 
     # build a model
     model = build_lstm_model(win_size, data_dim, num_classes, lstm_layers, lr)
 
+    # train the model
     history = model.fit(
         X_train,
         Y_train,
@@ -29,9 +36,14 @@ def single_run(TRAIN_COINS_LIST, win_size, future, return_target, label_func, da
         epochs=epochs,
         validation_split=0.15)
 
-    #model.save('lstm_model.h5')
+    plot_model_metrics(history)
 
-    #TODO: add prediction and performance metrics here
+    model.save('lstm_model.h5')
+
+    ### plot colored prediction on train data
+    # get
+    y_predicted_train = predict_point_by_point(model, X_train)
+    plot_3class_colored_prediction(price, y_predicted, point, win_size, future)
 
 
 
@@ -39,6 +51,8 @@ def single_run(TRAIN_COINS_LIST, win_size, future, return_target, label_func, da
 
 
 if __name__ == '__main__':
+    print(tf.__version__)
+    print(keras.__version__)
 
     # train ANN for short period (future= 3 periods = 6 h), 288=48h back
     # TODO: try to balance classes
@@ -48,6 +62,7 @@ if __name__ == '__main__':
     # list all coin pairs for the training set
     TRAIN_COINS_LIST = [('BTC', 2)]
 
+    res_period = '10min'
     win_size = 288  # 48h back
     future = 24  # 4h forward
     return_target = 0.007
@@ -70,6 +85,7 @@ if __name__ == '__main__':
 
     single_run(
         TRAIN_COINS_LIST,
+        res_period,
         win_size,
         future,
         return_target,
