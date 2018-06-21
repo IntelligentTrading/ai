@@ -17,20 +17,20 @@ class Metrics(Callback):
         self.val_precisions = []
 
     def on_epoch_end(self, epoch, logs={}):
-        val_predict = (np.asarray(self.model.predict(self.model.validation_data[0]))).round()
-        val_targ = self.model.validation_data[1]
-        _val_f1 = f1_score(val_targ, val_predict)
-        _val_recall = recall_score(val_targ, val_predict)
-        _val_precision = precision_score(val_targ, val_predict)
+        val_predict = (np.asarray(self.model.predict(self.validation_data[0]))).round()
+        val_targ = self.validation_data[1]
+        _val_f1 = f1_score(y_true=val_targ, y_pred=val_predict, average=None)   # can change averate to weitherd?
+        _val_recall = recall_score(y_true=val_targ, y_pred=val_predict, average=None)
+        _val_precision = precision_score(y_true=val_targ, y_pred=val_predict, average=None)
         self.val_f1s.append(_val_f1)
         self.val_recalls.append(_val_recall)
         self.val_precisions.append(_val_precision)
-        print(' — val_f1: %f — val_precision: %f — val_recall %f'  % (_val_f1, _val_precision, _val_recall))
+        print(' — val_f1: %s — val_precision: %s — val_recall %s'  % (str(_val_f1), str(_val_precision), str(_val_recall)))
         return
 
 
 
-
+'''
 def f1_score(y_true, y_pred):
 
     # Count positive samples.
@@ -51,7 +51,7 @@ def f1_score(y_true, y_pred):
     # Calculate f1_score
     f1_score = 2 * (precision * recall) / (precision + recall)
     return f1_score
-
+'''
 
 def build_lstm_model(win_size_timesteps, data_dim,num_classes, layers_dict, lr):
 
@@ -76,7 +76,7 @@ def build_lstm_model(win_size_timesteps, data_dim,num_classes, layers_dict, lr):
     model.compile(
         loss='categorical_crossentropy',
         optimizer=optimizer,
-        metrics=['accuracy', metrics.categorical_accuracy]
+        metrics=['accuracy'] #, metrics.categorical_accuracy]
     )
     print("> Compilation Time : ", time.time() - start)
     print(model.summary())
