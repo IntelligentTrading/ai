@@ -66,7 +66,7 @@ def label_3class_return_target(future_prices, return_target):
     '''
     calculate a dummy class number out of 90 future prices as 0 - same / 1 - up / 2 - down
     '''
-
+    # 0 -same, 1-up, -1 -down
     label_dummy_classes=3
 
     open_price = future_prices[0]
@@ -90,7 +90,27 @@ def label_3class_return_target(future_prices, return_target):
 
 
 def label_2class_return_target(future_prices, return_target):
-    pass
+    # NOTE: return tagret  is ignored here
+
+    # 1 - up, - 1 - down
+    label_dummy_classes = 2
+
+    open_price = future_prices[0]
+    close_price = future_prices[-1]
+    price_return = close_price - open_price
+    percentage_return = 1 - (open_price - price_return) / open_price
+
+    label = np.sign(percentage_return)
+
+    dummy_labels = np.zeros([1, label_dummy_classes])
+
+    # 0 - same / 1 - up / 2 - down
+    if label == 1:
+        dummy_labels[0, 0] = 1
+    elif label == -1:
+        dummy_labels[0, 1] = 1
+
+    return dummy_labels
 
 
 def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_target, label_func, num_classes):

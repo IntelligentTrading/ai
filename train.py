@@ -1,14 +1,21 @@
 import tensorflow as tf
 import keras
-from models.keras_models import build_lstm_model, predict_point_by_point
+from models.keras_models import build_lstm_model, predict_point_by_point, Metrics
 from artemis.experiments import ExperimentFunction
 from data.data_sources import get_combined_cleaned_df
 from data.datasets import one_coin_array_from_df, get_dataset_fused
 from utils.plotting import plot_model_metrics, plot_3class_colored_prediction
 
 
-#@ExperimentFunction
-def single_run(TRAIN_COINS_LIST, res_period, win_size, future, return_target, label_func, data_dim, num_classes, lstm_layers, lr, batch_size, epochs):
+def display_train_result(history):
+    plot_model_metrics(history)
+
+def compare_trainings(dict_of_histories):
+    print("you can add a training comparison here to show it in UI")
+
+
+@ExperimentFunction(display_function=display_train_result, comparison_function=compare_trainings)
+def single_train(TRAIN_COINS_LIST, res_period, win_size, future, return_target, label_func, data_dim, num_classes, lstm_layers, lr, batch_size, epochs):
     # build a dataset for training
     X_train, Y_train = get_dataset_fused(
         TRAIN_COINS_LIST,
@@ -29,14 +36,17 @@ def single_run(TRAIN_COINS_LIST, res_period, win_size, future, return_target, la
     model = build_lstm_model(win_size, data_dim, num_classes, lstm_layers, lr)
 
     # train the model
+    metrics = Metrics()
     history = model.fit(
         X_train,
         Y_train,
         batch_size=batch_size,
         epochs=epochs,
-        validation_split=0.15)
+        validation_split=0.15,
+        callbacks=[metrics]
+    )
 
-    plot_model_metrics(history)
+    #plot_model_metrics(history)
 
     model.save('lstm_model.h5')
 
@@ -45,10 +55,12 @@ def single_run(TRAIN_COINS_LIST, res_period, win_size, future, return_target, la
     y_predicted_train = predict_point_by_point(model, X_train)
     plot_3class_colored_prediction(price, y_predicted, point, win_size, future)
 
+    return history
+
+
 
 
 #TODO
-# add 2 label classification
 # add artemis
 # add a lot of performance measures
 
@@ -85,27 +97,47 @@ if __name__ == '__main__':
     epochs = 3
     ###############################
 
-
-    single_run(
-        TRAIN_COINS_LIST,
-        res_period,
-        win_size,
-        future,
-        return_target,
-        label_func,
-        data_dim,
-        num_classes,
-        lstm_layers,
-        lr,
-        batch_size,
-        epochs
+    single_train.add_variant(
+        TRAIN_COINS_LIST=TRAIN_COINS_LIST,
+        res_period=res_period,
+        win_size=win_size,
+        future=future,
+        return_target=return_target,
+        label_func=label_func,
+        data_dim=data_dim,
+        num_classes=num_classes,
+        lstm_layers=lstm_layers,
+        lr=0.0005,
+        batch_size=batch_size,
+        epochs=epochs
     )
 
-    # demo_drunkards_walk.browse()
+
+    single_train.add_variant(
+        TRAIN_COINS_LIST=TRAIN_COINS_LIST,
+        res_period=res_period,
+        win_size=win_size,
+        future=future,
+        return_target=return_target,
+        label_func=label_func,
+        data_dim=data_dim,
+        num_classes=num_classes,
+        lstm_layers=lstm_layers,
+        lr=0.001,
+        batch_size=batch_size,
+        epochs=epochs
+    )
+
+
+    #single_train.run()
+
+
     # Try
     #   run all
     #   compare all
     #   display 1
+    single_train.browse()
+
 
 
 
