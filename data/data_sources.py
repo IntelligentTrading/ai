@@ -61,6 +61,24 @@ def _ittconnection(DATABASE='prodcopy'):
                 print("Database does not exist")
             else:
                 print(err)
+    elif DATABASE == 'postgre_stage':
+        config = {
+            'user': 'itfcorestage',
+            'password': '63YB2P-uZqRpe-NJs6UM_fkG8',
+            'host': 'itf-core-aurora-postgresql-stage.caexel1tmds5.us-east-1.rds.amazonaws.com',
+            'port': '5432',
+            'dbname': 'itf_core_stage_db'
+        }
+
+        try:
+            db_connection = mysql.connector.connect(**config)
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Something is wrong with your user name or password")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                print("Database does not exist")
+            else:
+                print(err)
 
     return db_connection
 

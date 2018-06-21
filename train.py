@@ -15,7 +15,17 @@ def compare_trainings(dict_of_histories):
 
 
 @ExperimentFunction(display_function=display_train_result, comparison_function=compare_trainings)
-def single_train(TRAIN_COINS_LIST, res_period, win_size, future, return_target, label_func, data_dim, num_classes, lstm_layers, lr, batch_size, epochs):
+def single_train( res_period, win_size, future, return_target, label_func, data_dim, num_classes, lr, batch_size, epochs):
+    # list all coin pairs for the training set
+    TRAIN_COINS_LIST = [('BTC', 2)]
+
+    lstm_layers = [
+        {'layer':'input', 'units':50, 'dropout':0.15},
+        {'layer':'l2',    'units':25, 'dropout':0.15},
+        #{'layer':'l3',    'units':32, 'dropout':0.15},
+        {'layer':'last',  'units':16, 'dropout':0.15}
+    ]
+
     # build a dataset for training
     X_train, Y_train = get_dataset_fused(
         TRAIN_COINS_LIST,
@@ -37,13 +47,15 @@ def single_train(TRAIN_COINS_LIST, res_period, win_size, future, return_target, 
 
     # train the model
     metrics = Metrics()
+
     history = model.fit(
         X_train,
         Y_train,
         batch_size=batch_size,
         epochs=epochs,
         validation_split=0.15,
-        callbacks=[metrics]
+        callbacks=[metrics],
+        verbose = 2         # 0 = silent, 1 = progress bar, 2 = one line per epoch
     )
 
     #plot_model_metrics(history)
@@ -52,8 +64,9 @@ def single_train(TRAIN_COINS_LIST, res_period, win_size, future, return_target, 
 
     ### plot colored prediction on train data
     # get
+    point=1000
     y_predicted_train = predict_point_by_point(model, X_train)
-    plot_3class_colored_prediction(price, y_predicted, point, win_size, future)
+    plot_3class_colored_prediction(Y_train, y_predicted, point, win_size, future)
 
     return history
 
@@ -63,6 +76,7 @@ def single_train(TRAIN_COINS_LIST, res_period, win_size, future, return_target, 
 #TODO
 # add artemis
 # add a lot of performance measures
+# write a description MD file
 
 
 if __name__ == '__main__':
@@ -74,8 +88,7 @@ if __name__ == '__main__':
     # TODO: run for different return targets and take the best performer
 
     ####################### parameters of the dataset and model
-    # list all coin pairs for the training set
-    TRAIN_COINS_LIST = [('BTC', 2)]
+
 
     res_period = '10min'
     win_size = 288  # 48h back
@@ -98,7 +111,6 @@ if __name__ == '__main__':
     ###############################
 
     single_train.add_variant(
-        TRAIN_COINS_LIST=TRAIN_COINS_LIST,
         res_period=res_period,
         win_size=win_size,
         future=future,
@@ -106,7 +118,6 @@ if __name__ == '__main__':
         label_func=label_func,
         data_dim=data_dim,
         num_classes=num_classes,
-        lstm_layers=lstm_layers,
         lr=0.0005,
         batch_size=batch_size,
         epochs=epochs
@@ -114,7 +125,6 @@ if __name__ == '__main__':
 
 
     single_train.add_variant(
-        TRAIN_COINS_LIST=TRAIN_COINS_LIST,
         res_period=res_period,
         win_size=win_size,
         future=future,
@@ -122,7 +132,6 @@ if __name__ == '__main__':
         label_func=label_func,
         data_dim=data_dim,
         num_classes=num_classes,
-        lstm_layers=lstm_layers,
         lr=0.001,
         batch_size=batch_size,
         epochs=epochs
@@ -136,11 +145,15 @@ if __name__ == '__main__':
     #   run all
     #   compare all
     #   display 1
+    # view full           View all columns (the default view)
+    # delete 4.1          Delete record 1 of experiment 4
+    # delete unfinished   Delete all experiment records that have not run to completion
+    # delete 4-6          Delete all records from experiments 4, 5, 6.  You will be asked to confirm the deletion.
     single_train.browse()
 
 
 
-
+###########################################################
 
 # TODO:
 # - leave what I have as price_direction_indicator, with two classes and make them balanced (undersampling? adjusting delta?)
@@ -149,6 +162,7 @@ if __name__ == '__main__':
 
 # - try to learn for market manipulation detection.. BTC is clearly manipulated, try to detect this event (Orders? )
 
+# - try to add ETh to BTC as a predictor... may be it works as a predictor
 
 
 
