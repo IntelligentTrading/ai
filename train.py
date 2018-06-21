@@ -4,7 +4,7 @@ from models.keras_models import build_lstm_model, predict_point_by_point
 from artemis.experiments import ExperimentFunction
 from data.data_sources import get_combined_cleaned_df
 from data.datasets import one_coin_array_from_df, get_dataset_fused
-from utils.plotting import plot_model_metrics
+from utils.plotting import plot_model_metrics, plot_3class_colored_prediction
 
 
 #@ExperimentFunction
@@ -47,7 +47,10 @@ def single_run(TRAIN_COINS_LIST, res_period, win_size, future, return_target, la
 
 
 
-
+#TODO
+# add 2 label classification
+# add artemis
+# add a lot of performance measures
 
 
 if __name__ == '__main__':
