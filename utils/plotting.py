@@ -27,7 +27,7 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future):
 
 
 def plot_model_metrics(history):
-    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 5))
+    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(8, 4))
     axes[0, 0].set_title('train loss')
     axes[0, 0].plot(history.history['loss'])
 
