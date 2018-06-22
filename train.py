@@ -1,6 +1,6 @@
 import tensorflow as tf
 import keras
-from models.keras_models import build_lstm_model, predict_point_by_point, Metrics
+from models.keras_models import build_lstm_model, Metrics
 from artemis.experiments import ExperimentFunction
 from data.data_sources import get_combined_cleaned_df
 from data.datasets import one_coin_array_from_df, get_dataset_fused
@@ -14,7 +14,7 @@ def compare_trainings(dict_of_histories):
     print("you can add a training comparison here to show it in UI")
 
 
-@ExperimentFunction(display_function=display_train_result, comparison_function=compare_trainings)
+@ExperimentFunction(display_function=display_train_result)
 def single_train( res_period, win_size, future, return_target, label_func, data_dim, num_classes, lr, batch_size, epochs):
     # list all coin pairs for the training set
     TRAIN_COINS_LIST = [('BTC', 2)]
@@ -28,8 +28,8 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
 
     # build a dataset for training
     X_train, Y_train = get_dataset_fused(
-        TRAIN_COINS_LIST,
-        'prodcopy',
+        COINS_LIST=TRAIN_COINS_LIST,
+        db_name='prodcopy',
         res_period=res_period,
         win_size=win_size,
         future=future,
@@ -40,7 +40,17 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
 
     # set a validation ts (BTC/2 here, can be changed)
     valid_data_df = get_combined_cleaned_df(transaction_coin='BTC', counter_coin=2, res_period=res_period)
-    valid_price_array = valid_data_df['price'].values
+    validation_price = valid_data_df['price'].values
+    X_valid, Y_valid = get_dataset_fused(
+        COINS_LIST=[('BTC',2)],
+        db_name='prodcopy',
+        res_period=res_period,
+        win_size=win_size,
+        future=future,
+        return_target=return_target,
+        label_func=label_func,
+        num_classes=num_classes
+    )
 
     # build a model
     model = build_lstm_model(win_size, data_dim, num_classes, lstm_layers, lr)
@@ -65,8 +75,10 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     ### plot colored prediction on train data
     # get
     point=1000
-    y_predicted_train = predict_point_by_point(model, X_train)
-    plot_3class_colored_prediction(Y_train, y_predicted, point, win_size, future)
+    y_predicted_valid = model.predict(X_valid)
+    plot_3class_colored_prediction(validation_price, y_predicted_valid, point, win_size, future)
+
+    # TODO: close keras session
 
     return history
 
@@ -93,7 +105,7 @@ if __name__ == '__main__':
     res_period = '10min'
     win_size = 288  # 48h back
     future = 24  # 4h forward
-    return_target = 0.007
+    return_target = 0.008  # need to tune it to make classes balanced
     data_dim = 4
 
     label_func = 'label_3class_return_target'
@@ -109,6 +121,8 @@ if __name__ == '__main__':
     batch_size = 512  # might be up to 7000 if enough memory and GPU
     epochs = 3
     ###############################
+    # you can give to an experiment your own name
+    # my_experiment_function.add_variant('big_a', a=10000)
 
     single_train.add_variant(
         res_period=res_period,
@@ -132,7 +146,7 @@ if __name__ == '__main__':
         label_func=label_func,
         data_dim=data_dim,
         num_classes=num_classes,
-        lr=0.001,
+        lr=0.007,
         batch_size=batch_size,
         epochs=epochs
     )
