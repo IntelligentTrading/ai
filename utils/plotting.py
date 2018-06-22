@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 def plot_3class_colored_prediction(price, y_predicted, point, win_size, future):
     start_of_train_position = point
     position_on_plot = point + win_size
     end_of_future_position = point + win_size + future
 
-    fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(14, 5))
+    fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(10, 3))
     col3 = []
     for p in y_predicted:
         idx = np.argmax(p)
