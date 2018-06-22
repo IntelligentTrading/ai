@@ -24,11 +24,11 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future):
     ax1.axvline(end_of_future_position, color=col3[position_on_plot], lw=2)
     ax1.axvline(start_of_train_position, color='blue')
 
-    plt.show()
+    plt.show(block=False)
 
 
 def plot_model_metrics(history):
-    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(8, 4))
+    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 5))
     axes[0, 0].set_title('train loss')
     axes[0, 0].plot(history.history['loss'])
 
@@ -41,5 +41,5 @@ def plot_model_metrics(history):
     axes[1, 1].set_title('Validation Accuracy')
     axes[1, 1].plot(history.history['val_acc'], c='orange')
 
-    plt.show()
+    plt.show(block=False)
     print(history.history.keys())
