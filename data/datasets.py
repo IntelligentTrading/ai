@@ -31,7 +31,7 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
     #prices = np.zeros([num_examples, 1])
 
     # form training examples by shifting triugh the dataset
-    print(">Start to form dataset of " + str(num_examples) + " examples")
+    print(" One coin: Converting dataframe to dataset array,  " + str(num_examples) + " examples")
     for start_example in range(0, num_examples):
         end_example = start_example + win_size
 
@@ -56,7 +56,7 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
         # assert the array dimencions
 
         if start_example % 10000 == 0:
-            print("... processed examples: " + str(start_example))
+            print(" ... processed examples: " + str(start_example))
 
     return data_set, labels
 
@@ -124,6 +124,8 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     X = []  # (147319, 200, 4) - 4 is price, volume, price_var, volume_var
     Y = []  # (147319, 3)  - 3 is number of classes
 
+    print(">Form data set X array from a coin list:" + str(COINS_LIST))
+
     for transaction_coin, counter_coin in COINS_LIST:
 
         # retrieve a time series df from DB as [time,price,volume, price_var, volume_var]
@@ -151,8 +153,6 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
 
 
 
-
-
     # delete all examples with NaN inside
     idx2delete = []
     for n in range(X.shape[0] - 1):
@@ -161,7 +161,7 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     X = np.delete(X, (idx2delete), axis=0)
     Y = np.delete(Y, (idx2delete), axis=0)
 
-    print("> done: same= " + str(sum(Y[:,0])) + ' | UP= ' + str(sum(Y[:,1])) + ' | DOWN= ' + str(sum(Y[:,2])))
+    print("> Dataset has been built: same= " + str(sum(Y[:,0])) + ' | UP= ' + str(sum(Y[:,1])) + ' | DOWN= ' + str(sum(Y[:,2])))
 
     # TODO: shaffle dataset
 
@@ -170,7 +170,7 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     X = _normalize_dataset(X)
 
     # sanity check
-    print(" Checking for NaN in dataset...")
+    print(" ... Sanity Checking for NaN in dataset")
     for n in range(X.shape[0]):
         if np.isnan(X[n, :, :]).any():
             print(n)
