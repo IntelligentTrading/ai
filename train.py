@@ -1,13 +1,13 @@
+from utils.plotting import plot_model_results, plot_3class_colored_prediction
+from artemis.experiments import ExperimentFunction
+from data.data_sources import get_combined_cleaned_df
+from data.datasets import one_coin_array_from_df, get_dataset_fused
+from models.keras_models import build_lstm_model, Metrics
+
 import tensorflow as tf
 import keras
 from keras import backend as K
 from keras.models import load_model
-
-from models.keras_models import build_lstm_model, Metrics
-from artemis.experiments import ExperimentFunction
-from data.data_sources import get_combined_cleaned_df
-from data.datasets import one_coin_array_from_df, get_dataset_fused
-from utils.plotting import plot_model_results, plot_3class_colored_prediction
 
 
 def display_train_result(results):
