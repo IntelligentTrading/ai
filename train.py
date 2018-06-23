@@ -108,7 +108,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     #close keras session
     K.clear_session()
 
-    return history.history, metrics.get_scores(), plot_kvargs, load_model('lstm_model.h5')
+    return history.history, metrics.get_scores(), plot_kvargs
 
 
 def add_all_experiments_variants():
