@@ -78,35 +78,27 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
 
     ### plot colored prediction on train data
     # get
-    point=1500
+    point=2000
     print("===========  PREDICTING on validation dataset  ==============")
     y_predicted_valid = model.predict(X_valid)
-    plot_3class_colored_prediction(validation_price, y_predicted_valid, point, win_size, future)
+
+    plot_kvargs = {
+        'price': validation_price,
+        'y_predicted': y_predicted_valid,
+        'point': point,
+        'win_size': win_size,
+        'future': future
+    }
+    plot_3class_colored_prediction(**plot_kvargs)
 
     #close keras session
     K.clear_session()
 
-    return history.history, metrics.get_scores()
+    return history.history, metrics.get_scores(), plot_kvargs, model
 
 
-
-#TODO
-# add a lot of performance measures
-# write a description MD file
-# add Logger
-
-
-if __name__ == '__main__':
-    print("   TensorFlow = " + tf.__version__)
-    print("   Keras = " + keras.__version__)
-
-    # train ANN for short period (future= 3 periods = 6 h), 288=48h back
-    # TODO: try to balance classes
-    # TODO: run for different return targets and take the best performer
-
+def add_all_experiments_variants():
     ####################### parameters of the dataset and model
-
-
     res_period = '10min'
     win_size = 288  # 48h back
     future = 24  # 4h forward
@@ -124,7 +116,7 @@ if __name__ == '__main__':
     ]
     lr = 0.0005
     batch_size = 512  # might be up to 7000 if enough memory and GPU
-    epochs = 1
+    epochs = 5
     ###############################
     # you can give to an experiment your own name
     # my_experiment_function.add_variant('big_a', a=10000)
@@ -142,7 +134,6 @@ if __name__ == '__main__':
         epochs=epochs
     )
 
-
     single_train.add_variant(
         res_period=res_period,
         win_size=win_size,
@@ -151,13 +142,30 @@ if __name__ == '__main__':
         label_func=label_func,
         data_dim=data_dim,
         num_classes=num_classes,
-        lr=0.007,
+        lr=0.01,
         batch_size=batch_size,
         epochs=epochs
     )
 
 
-    #single_train.run()
+#TODO
+# add a lot of performance measures
+# write a description MD file
+# add Logger
+# save model file in the same experiment folder
+# create notebok to display and explore experiments
+
+
+if __name__ == '__main__':
+    print("   TensorFlow = " + tf.__version__)
+    print("   Keras = " + keras.__version__)
+
+    # train ANN for short period (future= 3 periods = 6 h), 288=48h back
+    # TODO: try to balance classes
+    # TODO: run for different return targets and take the best performer
+
+    add_all_experiments_variants()
+    single_train.browse()
 
 
     # Try
@@ -168,7 +176,7 @@ if __name__ == '__main__':
     # delete 4.1          Delete record 1 of experiment 4
     # delete unfinished   Delete all experiment records that have not run to completion
     # delete 4-6          Delete all records from experiments 4, 5, 6.  You will be asked to confirm the deletion.
-    single_train.browse()
+
 
 
 

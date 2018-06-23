@@ -6,7 +6,7 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future):
     position_on_plot = point + win_size
     end_of_future_position = point + win_size + future
 
-    fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(12, 4))
+    fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(10, 4))
     col3 = []
     for p in y_predicted:
         idx = np.argmax(p)
@@ -32,8 +32,9 @@ def plot_model_results(results):
 
     history = results[0]
     scores = results[1]
+    plot_kvargs = results[2]
 
-    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 5))
+    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(8, 4))
     axes[0, 0].set_title('train loss')
     axes[0, 0].plot(history['loss'])
 
@@ -46,6 +47,12 @@ def plot_model_results(results):
     axes[1, 1].set_title('Validation Accuracy')
     axes[1, 1].plot(history['val_acc'], c='orange')
 
-    plt.show(block=False)
+    plt.show(block=False) # block=False
 
-    print(scores)
+    print("FInal Scores:")
+    print(" f1       :" + str(scores['f1']))
+    print(" recall   :" + str(scores['recall']))
+    print(" precision:" + str(scores['precision']))
+
+    # plot colored price
+    plot_3class_colored_prediction(**plot_kvargs)
