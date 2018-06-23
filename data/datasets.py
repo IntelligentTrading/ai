@@ -124,7 +124,7 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     X = []  # (147319, 200, 4) - 4 is price, volume, price_var, volume_var
     Y = []  # (147319, 3)  - 3 is number of classes
 
-    print(">Form data set X array from a coin list:" + str(COINS_LIST))
+    print("> Form data set X array from a coin list:" + str(COINS_LIST))
 
     for transaction_coin, counter_coin in COINS_LIST:
 
@@ -175,7 +175,7 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
         if np.isnan(X[n, :, :]).any():
             print(n)
 
-    print("X dataset shape: " + str(X.shape))
-    print("Y dataset shape: " + str(Y.shape))
+    print("final X dataset shape: " + str(X.shape))
+    print("final Y dataset shape: " + str(Y.shape))
 
     return X, Y

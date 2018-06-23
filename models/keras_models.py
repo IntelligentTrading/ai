@@ -8,6 +8,7 @@ from keras import backend as K
 import numpy as np
 from keras.callbacks import Callback
 from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
+from sklearn.exceptions import UndefinedMetricWarning
 import warnings
 
 

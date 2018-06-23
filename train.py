@@ -5,11 +5,11 @@ from models.keras_models import build_lstm_model, Metrics
 from artemis.experiments import ExperimentFunction
 from data.data_sources import get_combined_cleaned_df
 from data.datasets import one_coin_array_from_df, get_dataset_fused
-from utils.plotting import plot_model_metrics, plot_3class_colored_prediction
+from utils.plotting import plot_model_results, plot_3class_colored_prediction
 
 
-def display_train_result(history):
-    plot_model_metrics(history)
+def display_train_result(results):
+    plot_model_results(results)
 
 def compare_trainings(dict_of_histories):
     print("you can add a training comparison here to show it in UI")
@@ -28,7 +28,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     ]
 
     # build a dataset for training
-    print(">>> Form a test data set:")
+    print("=========== Form a TEST data set =========== ")
     X_train, Y_train = get_dataset_fused(
         COINS_LIST=TRAIN_COINS_LIST,
         db_name='prodcopy',
@@ -41,7 +41,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     )
 
     # set a validation ts (BTC/2 here, can be changed)
-    print(">>> Form a validation data set:")
+    print("=========== Form a VALIDATION data set =========== ")
     valid_data_df = get_combined_cleaned_df(transaction_coin='BTC', counter_coin=2, res_period=res_period)
     validation_price = valid_data_df['price'].values
     X_valid, Y_valid = get_dataset_fused(
@@ -78,8 +78,8 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
 
     ### plot colored prediction on train data
     # get
-    point=1000
-    print("... Start predicting on validation dataset")
+    point=1500
+    print("===========  PREDICTING on validation dataset  ==============")
     y_predicted_valid = model.predict(X_valid)
     plot_3class_colored_prediction(validation_price, y_predicted_valid, point, win_size, future)
 
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     ]
     lr = 0.0005
     batch_size = 512  # might be up to 7000 if enough memory and GPU
-    epochs = 2
+    epochs = 1
     ###############################
     # you can give to an experiment your own name
     # my_experiment_function.add_variant('big_a', a=10000)
