@@ -1,6 +1,8 @@
 import tensorflow as tf
 import keras
 from keras import backend as K
+from keras.models import load_model
+
 from models.keras_models import build_lstm_model, Metrics
 from artemis.experiments import ExperimentFunction
 from data.data_sources import get_combined_cleaned_df
@@ -19,6 +21,11 @@ def compare_trainings(dict_of_histories):
 def single_train( res_period, win_size, future, return_target, label_func, data_dim, num_classes, lr, batch_size, epochs):
     # list all coin pairs for the training set
     TRAIN_COINS_LIST = [('BTC', 2)]
+    # TRAIN_COINS_LIST = [
+    #     ('BTC', 2), ('ETH', 2), ('XRP',2), ('ETC',2), ('DASH',2), ('LTC',2),
+    #     ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)
+    # ]
+
 
     lstm_layers = [
         {'layer':'input', 'units':50, 'dropout':0.15},
@@ -26,6 +33,13 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
         #{'layer':'l3',    'units':32, 'dropout':0.15},
         {'layer':'last',  'units':16, 'dropout':0.15}
     ]
+
+    # lstm_layers = [
+    #     {'layer':'input', 'units':90, 'dropout':0.15},
+    #     {'layer':'l2',    'units':64, 'dropout':0.15},
+    #     {'layer':'l3',    'units':32, 'dropout':0.15},
+    #     {'layer':'last',  'units':16, 'dropout':0.1}
+    # ]
 
     # build a dataset for training
     print("=========== Form a TEST data set =========== ")
@@ -94,7 +108,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     #close keras session
     K.clear_session()
 
-    return history.history, metrics.get_scores(), plot_kvargs, model
+    return history.history, metrics.get_scores(), plot_kvargs, load_model('lstm_model.h5')
 
 
 def add_all_experiments_variants():
@@ -108,15 +122,9 @@ def add_all_experiments_variants():
     label_func = 'label_3class_return_target'
     num_classes = 3
 
-    lstm_layers = [
-        {'layer':'input', 'units':50, 'dropout':0.15},
-        {'layer':'l2',    'units':25, 'dropout':0.15},
-        #{'layer':'l3',    'units':32, 'dropout':0.15},
-        {'layer':'last',  'units':16, 'dropout':0.15}
-    ]
     lr = 0.0005
     batch_size = 512  # might be up to 7000 if enough memory and GPU
-    epochs = 5
+    epochs = 1
     ###############################
     # you can give to an experiment your own name
     # my_experiment_function.add_variant('big_a', a=10000)
@@ -152,8 +160,9 @@ def add_all_experiments_variants():
 # add a lot of performance measures
 # write a description MD file
 # add Logger
-# save model file in the same experiment folder
-# create notebok to display and explore experiments
+
+# save model file in the same experiment folder - do it better!!
+
 
 
 if __name__ == '__main__':
