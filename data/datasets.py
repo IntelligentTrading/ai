@@ -129,7 +129,7 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     for transaction_coin, counter_coin in COINS_LIST:
 
         # retrieve a time series df from DB as [time,price,volume, price_var, volume_var]
-        data_df = get_combined_cleaned_df(transaction_coin, counter_coin, res_period)
+        data_df = get_combined_cleaned_df(db_name, transaction_coin, counter_coin, res_period)
 
         # convert this df into a array of shape of (147319, 200, 4) = (examples, time_back, features)
         X_train_one, Y_train_one = one_coin_array_from_df(

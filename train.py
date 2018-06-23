@@ -20,26 +20,26 @@ def compare_trainings(dict_of_histories):
 @ExperimentFunction(display_function=display_train_result)
 def single_train( res_period, win_size, future, return_target, label_func, data_dim, num_classes, lr, batch_size, epochs):
     # list all coin pairs for the training set
-    TRAIN_COINS_LIST = [('BTC', 2)]
-    # TRAIN_COINS_LIST = [
-    #     ('BTC', 2), ('ETH', 2), ('XRP',2), ('ETC',2), ('DASH',2), ('LTC',2),
-    #     ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)
-    # ]
-
-
-    lstm_layers = [
-        {'layer':'input', 'units':50, 'dropout':0.15},
-        {'layer':'l2',    'units':25, 'dropout':0.15},
-        #{'layer':'l3',    'units':32, 'dropout':0.15},
-        {'layer':'last',  'units':16, 'dropout':0.15}
+    #TRAIN_COINS_LIST = [('BTC', 2)]
+    TRAIN_COINS_LIST = [
+        ('ETH', 2), ('XRP',2), ('ETC',2), ('DASH',2), ('LTC',2),
+        ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)
     ]
 
+
     # lstm_layers = [
-    #     {'layer':'input', 'units':90, 'dropout':0.15},
-    #     {'layer':'l2',    'units':64, 'dropout':0.15},
-    #     {'layer':'l3',    'units':32, 'dropout':0.15},
-    #     {'layer':'last',  'units':16, 'dropout':0.1}
+    #     {'layer':'input', 'units':50, 'dropout':0.15},
+    #     {'layer':'l2',    'units':25, 'dropout':0.15},
+    #     #{'layer':'l3',    'units':32, 'dropout':0.15},
+    #     {'layer':'last',  'units':16, 'dropout':0.15}
     # ]
+
+    lstm_layers = [
+        {'layer':'input', 'units':90, 'dropout':0.15},
+        {'layer':'l2',    'units':64, 'dropout':0.15},
+        {'layer':'l3',    'units':32, 'dropout':0.15},
+        {'layer':'last',  'units':16, 'dropout':0.1}
+    ]
 
     # build a dataset for training
     print("=========== Form a TEST data set =========== ")
@@ -55,7 +55,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     )
 
     # set a validation ts (BTC/2 here, can be changed)
-    print("=========== Form a VALIDATION data set =========== ")
+    print("=========== Form a VALIDATION data set (BTC) =========== ")
     valid_data_df = get_combined_cleaned_df(transaction_coin='BTC', counter_coin=2, res_period=res_period)
     validation_price = valid_data_df['price'].values
     X_valid, Y_valid = get_dataset_fused(
@@ -116,15 +116,15 @@ def add_all_experiments_variants():
     res_period = '10min'
     win_size = 288  # 48h back
     future = 24  # 4h forward
-    return_target = 0.008  # need to tune it to make classes balanced
+    return_target = 0.01  # need to tune it to make classes balanced
     data_dim = 4
 
     label_func = 'label_3class_return_target'
     num_classes = 3
 
     lr = 0.0005
-    batch_size = 512  # might be up to 7000 if enough memory and GPU
-    epochs = 1
+    batch_size = 6000  # might be up to 7000 if enough memory and GPU
+    epochs = 20
     ###############################
     # you can give to an experiment your own name
     # my_experiment_function.add_variant('big_a', a=10000)
@@ -137,23 +137,23 @@ def add_all_experiments_variants():
         label_func=label_func,
         data_dim=data_dim,
         num_classes=num_classes,
-        lr=0.0005,
+        lr=0.0006,
         batch_size=batch_size,
         epochs=epochs
     )
 
-    single_train.add_variant(
-        res_period=res_period,
-        win_size=win_size,
-        future=future,
-        return_target=return_target,
-        label_func=label_func,
-        data_dim=data_dim,
-        num_classes=num_classes,
-        lr=0.01,
-        batch_size=batch_size,
-        epochs=epochs
-    )
+    # single_train.add_variant(
+    #     res_period=res_period,
+    #     win_size=win_size,
+    #     future=future,
+    #     return_target=return_target,
+    #     label_func=label_func,
+    #     data_dim=data_dim,
+    #     num_classes=num_classes,
+    #     lr=0.01,
+    #     batch_size=batch_size,
+    #     epochs=epochs
+    # )
 
 
 #TODO
