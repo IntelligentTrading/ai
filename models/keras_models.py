@@ -1,14 +1,15 @@
 import time
+import numpy as np
+from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
+from sklearn.exceptions import UndefinedMetricWarning
+
 from keras.models import load_model, Model, Sequential
 from keras.layers import Dense, Activation, Dropout, Input, LSTM, Reshape, Lambda, RepeatVector
 from keras import metrics
 from keras.optimizers import Adam, adagrad
 from keras import backend as K
-
-import numpy as np
 from keras.callbacks import Callback
-from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
-from sklearn.exceptions import UndefinedMetricWarning
+
 import warnings
 
 
