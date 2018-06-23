@@ -27,19 +27,25 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future):
     plt.show(block=False)
 
 
-def plot_model_metrics(history):
+def plot_model_results(results):
+    # results is a dictionary of dictionaries of all returning results from the experiment
+
+    history = results[0]
+    scores = results[1]
+
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 5))
     axes[0, 0].set_title('train loss')
-    axes[0, 0].plot(history.history['loss'])
+    axes[0, 0].plot(history['loss'])
 
     axes[0, 1].set_title('validation loss')
-    axes[0, 1].plot(history.history['val_loss'], c='orange')
+    axes[0, 1].plot(history['val_loss'], c='orange')
 
     axes[1, 0].set_title('Train Accuracy')
-    axes[1, 0].plot(history.history['acc'])
+    axes[1, 0].plot(history['acc'])
 
     axes[1, 1].set_title('Validation Accuracy')
-    axes[1, 1].plot(history.history['val_acc'], c='orange')
+    axes[1, 1].plot(history['val_acc'], c='orange')
 
     plt.show(block=False)
-    print(history.history.keys())
+
+    print(scores)
