@@ -1,5 +1,6 @@
 import tensorflow as tf
 import keras
+from keras import backend as K
 from models.keras_models import build_lstm_model, Metrics
 from artemis.experiments import ExperimentFunction
 from data.data_sources import get_combined_cleaned_df
@@ -27,6 +28,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     ]
 
     # build a dataset for training
+    print(">>> Form a test data set:")
     X_train, Y_train = get_dataset_fused(
         COINS_LIST=TRAIN_COINS_LIST,
         db_name='prodcopy',
@@ -39,6 +41,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     )
 
     # set a validation ts (BTC/2 here, can be changed)
+    print(">>> Form a validation data set:")
     valid_data_df = get_combined_cleaned_df(transaction_coin='BTC', counter_coin=2, res_period=res_period)
     validation_price = valid_data_df['price'].values
     X_valid, Y_valid = get_dataset_fused(
@@ -56,6 +59,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     model = build_lstm_model(win_size, data_dim, num_classes, lstm_layers, lr)
 
     # train the model
+    print("=========== TRAINING  ============ ")
     metrics = Metrics()
 
     history = model.fit(
@@ -75,20 +79,21 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     ### plot colored prediction on train data
     # get
     point=1000
+    print("... Start predicting on validation dataset")
     y_predicted_valid = model.predict(X_valid)
     plot_3class_colored_prediction(validation_price, y_predicted_valid, point, win_size, future)
 
-    # TODO: close keras session
+    #close keras session
+    K.clear_session()
 
-    return history
-
+    return history.history, metrics.get_scores()
 
 
 
 #TODO
-# add artemis
 # add a lot of performance measures
 # write a description MD file
+# add Logger
 
 
 if __name__ == '__main__':
@@ -119,7 +124,7 @@ if __name__ == '__main__':
     ]
     lr = 0.0005
     batch_size = 512  # might be up to 7000 if enough memory and GPU
-    epochs = 3
+    epochs = 2
     ###############################
     # you can give to an experiment your own name
     # my_experiment_function.add_variant('big_a', a=10000)

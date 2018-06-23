@@ -8,6 +8,7 @@ from keras import backend as K
 import numpy as np
 from keras.callbacks import Callback
 from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
+import warnings
 
 
 class Metrics(Callback):
@@ -19,14 +20,22 @@ class Metrics(Callback):
     def on_epoch_end(self, epoch, logs={}):
         val_predict = (np.asarray(self.model.predict(self.validation_data[0]))).round()
         val_targ = self.validation_data[1]
-        _val_f1 = f1_score(y_true=val_targ, y_pred=val_predict, average=None)   # can change averate to weitherd?
-        _val_recall = recall_score(y_true=val_targ, y_pred=val_predict, average=None)
-        _val_precision = precision_score(y_true=val_targ, y_pred=val_predict, average=None)
+
+        # irnore warnings of ill defined scores
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
+            _val_f1 = f1_score(y_true=val_targ, y_pred=val_predict, average=None)   # can change averate to weitherd?
+            _val_recall = recall_score(y_true=val_targ, y_pred=val_predict, average=None)
+            _val_precision = precision_score(y_true=val_targ, y_pred=val_predict, average=None)
+
         self.val_f1s.append(_val_f1)
         self.val_recalls.append(_val_recall)
         self.val_precisions.append(_val_precision)
         print(' — val_f1: %s — val_precision: %s — val_recall %s'  % (str(_val_f1), str(_val_precision), str(_val_recall)))
         return
+
+    def get_scores(self):
+        return {'f1':self.val_f1s, 'recall':self.val_recalls, 'precision':self.val_precisions}
 
 
 
