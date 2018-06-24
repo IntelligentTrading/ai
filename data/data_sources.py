@@ -70,9 +70,8 @@ def _ittconnection(DATABASE='prodcopy'):
             'port': '5432',
             'dbname': 'itf_core_stage_db'
         }
-
         try:
-            db_connection = mysql.connector.connect(**config)
+            db_connection = pg.connect(**config)
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something is wrong with your user name or password")
