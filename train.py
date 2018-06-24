@@ -43,10 +43,11 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     ]
 
     # build a dataset for training
+    db_name = 'postgre_stage'   # 'prodcopy',
     print("=========== Form a TEST data set =========== ")
     X_train, Y_train = get_dataset_fused(
         COINS_LIST=TRAIN_COINS_LIST,
-        db_name='postgre_stage', # 'prodcopy',
+        db_name=db_name,
         res_period=res_period,
         win_size=win_size,
         future=future,
@@ -57,7 +58,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
 
     # set a validation ts (BTC/2 here, can be changed)
     print("=========== Form a VALIDATION data set (BTC) =========== ")
-    valid_data_df = get_combined_cleaned_df(transaction_coin='BTC', counter_coin=2, res_period=res_period)
+    valid_data_df = get_combined_cleaned_df(db_name=db_name, transaction_coin='BTC', counter_coin=2, res_period=res_period)
     validation_price = valid_data_df['price'].values
     X_valid, Y_valid = get_dataset_fused(
         COINS_LIST=[('BTC',2)],
@@ -177,7 +178,8 @@ if __name__ == '__main__':
     # TODO: run for different return targets and take the best performer
 
     add_all_experiments_variants()
-    single_train.browse()
+    #single_train.browse()
+    single_train.run()
 
 
     # Try
