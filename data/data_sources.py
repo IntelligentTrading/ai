@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import errorcode
+import psycopg2 as pg
 import pandas as pd
 import numpy as np
 
