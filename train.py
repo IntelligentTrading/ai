@@ -46,7 +46,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     print("=========== Form a TEST data set =========== ")
     X_train, Y_train = get_dataset_fused(
         COINS_LIST=TRAIN_COINS_LIST,
-        db_name='prodcopy',
+        db_name='postgre_stage', # 'prodcopy',
         res_period=res_period,
         win_size=win_size,
         future=future,
