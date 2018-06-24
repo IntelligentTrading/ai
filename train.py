@@ -179,8 +179,10 @@ if __name__ == '__main__':
 
     add_all_experiments_variants()
     #single_train.browse()
-    single_train.run()
 
+    variants = single_train.get_all_variants()
+    experiment_1 = variants[1]
+    experiment_1.run()
 
     # Try
     #   run all
