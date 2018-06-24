@@ -28,7 +28,6 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
 
     data_set = np.zeros([num_examples, win_size, predictors])
     labels = np.zeros([num_examples, label_dummy_classes])
-    #prices = np.zeros([num_examples, 1])
 
     # form training examples by shifting triugh the dataset
     print(" One coin: Converting dataframe to dataset array,  " + str(num_examples) + " examples")
@@ -127,7 +126,6 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     print("> Form data set X array from a coin list:" + str(COINS_LIST))
 
     for transaction_coin, counter_coin in COINS_LIST:
-
         # retrieve a time series df from DB as [time,price,volume, price_var, volume_var]
         data_df = get_combined_cleaned_df(db_name, transaction_coin, counter_coin, res_period)
 
@@ -150,7 +148,6 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
         else:
             X = np.concatenate((X, X_train_one), axis=0)
             Y = np.concatenate((Y, Y_train_one), axis=0)
-
 
 
     # delete all examples with NaN inside
@@ -177,5 +174,8 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
 
     print("final X dataset shape: " + str(X.shape))
     print("final Y dataset shape: " + str(Y.shape))
+
+    np.save("X.pkl", X)
+    np.save("Y.pkl", Y)
 
     return X, Y

@@ -119,7 +119,7 @@ def get_combined_cleaned_df(db_name, transaction_coin, counter_coin, res_period)
 
     # merge because the timestamps must match, and merge left because price shall have a priority
     raw_data_frame = pd.merge(raw_price_ts, raw_volume_ts, how='left', left_index=True, right_index=True)
-    print('> ' + transaction_coin + ': get raw data from DB, number of time points: ' + str(raw_data_frame.shape[0]))
+    print('> ' + transaction_coin + '/' + str(counter_coin) + ': get raw data from DB, number of time points: ' + str(raw_data_frame.shape[0]))
     raw_data_frame[pd.isnull(raw_data_frame)] = None
 
     # add variance, resample (for smoothing)
