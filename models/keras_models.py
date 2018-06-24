@@ -1,6 +1,6 @@
 import numpy as np
 #from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
-from sklearn.exceptions import UndefinedMetricWarning
+#from sklearn.exceptions import UndefinedMetricWarning
 
 from keras.models import load_model, Model, Sequential
 from keras.layers import Dense, Activation, Dropout, Input, LSTM, Reshape, Lambda, RepeatVector
@@ -42,13 +42,14 @@ class Metrics(Callback):
         val_predict = (np.asarray(self.model.predict(self.validation_data[0]))).round()
         val_targ = self.validation_data[1]
 
-        # irnore warnings of ill defined scores
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
-            # _val_f1 = f1_score(y_true=val_targ, y_pred=val_predict, average=None)   # can change averate to weitherd?
-            # _val_recall = recall_score(y_true=val_targ, y_pred=val_predict, average=None)
-            # _val_precision = precision_score(y_true=val_targ, y_pred=val_predict, average=None)
-            _val_f1, _val_precision, _val_recall = f1_scores(y_true=val_targ, y_predicted=val_predict)
+        # # irnore warnings of ill defined scores
+        # with warnings.catch_warnings():
+        #     warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
+        #     _val_f1 = f1_score(y_true=val_targ, y_pred=val_predict, average=None)   # can change averate to weitherd?
+        #     _val_recall = recall_score(y_true=val_targ, y_pred=val_predict, average=None)
+        #     _val_precision = precision_score(y_true=val_targ, y_pred=val_predict, average=None)
+
+        _val_f1, _val_precision, _val_recall = f1_scores(y_true=val_targ, y_predicted=val_predict)
 
         self.val_f1s.append(_val_f1)
         self.val_recalls.append(_val_recall)

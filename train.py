@@ -127,7 +127,7 @@ def add_all_experiments_variants():
 
     lr = 0.0005
     batch_size = 6000  # might be up to 7000 if enough memory and GPU
-    epochs = 20
+    epochs = 30
     ###############################
     # you can give to an experiment your own name
     # my_experiment_function.add_variant('big_a', a=10000)
