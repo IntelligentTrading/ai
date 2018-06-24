@@ -1,6 +1,5 @@
-import time
 import numpy as np
-from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
+#from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
 from sklearn.exceptions import UndefinedMetricWarning
 
 from keras.models import load_model, Model, Sequential
@@ -11,6 +10,26 @@ from keras import backend as K
 from keras.callbacks import Callback
 
 import warnings
+
+def f1_scores(y_true, y_predicted):
+    y_true=set(y_true)
+    y_predicted=set(y_predicted)
+
+    tp = len(y_true & y_predicted)
+    fp = len(y_predicted) - tp
+    fn = len(y_true) - tp
+
+    #tp=len(y_true.intersection(y_predicted))
+    #fp=len(y_predicted.difference(y_true))
+    #fn=len(y_true.difference(y_predicted))
+
+    if tp>0:
+        precision = float(tp)/(tp+fp)
+        recall = float(tp)/(tp+fn)
+        f1 = 2*((precision*recall)/(precision+recall))
+        return [f1, precision, recall]
+    else:
+        return 0
 
 
 class Metrics(Callback):
@@ -26,9 +45,10 @@ class Metrics(Callback):
         # irnore warnings of ill defined scores
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
-            _val_f1 = f1_score(y_true=val_targ, y_pred=val_predict, average=None)   # can change averate to weitherd?
-            _val_recall = recall_score(y_true=val_targ, y_pred=val_predict, average=None)
-            _val_precision = precision_score(y_true=val_targ, y_pred=val_predict, average=None)
+            # _val_f1 = f1_score(y_true=val_targ, y_pred=val_predict, average=None)   # can change averate to weitherd?
+            # _val_recall = recall_score(y_true=val_targ, y_pred=val_predict, average=None)
+            # _val_precision = precision_score(y_true=val_targ, y_pred=val_predict, average=None)
+            _val_f1, _val_precision, _val_recall = f1_scores(y_true=val_targ, y_predicted=val_predict)
 
         self.val_f1s.append(_val_f1)
         self.val_recalls.append(_val_recall)
@@ -59,13 +79,13 @@ def build_lstm_model(win_size_timesteps, data_dim,num_classes, layers_dict, lr):
 
     optimizer = adagrad(lr)
 
-    start = time.time()
+
     model.compile(
         loss='categorical_crossentropy',
         optimizer=optimizer,
         metrics=['accuracy'] #, metrics.categorical_accuracy]
     )
-    #print("> Compilation Time : ", time.time() - start)
+
     #print(model.summary())
 
     return model

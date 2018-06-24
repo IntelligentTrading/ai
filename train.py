@@ -1,3 +1,4 @@
+import time
 from utils.plotting import plot_model_results, plot_3class_colored_prediction
 from artemis.experiments import ExperimentFunction
 from data.data_sources import get_combined_cleaned_df
@@ -94,6 +95,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     # get
     point=2000
     print("===========  PREDICTING on validation dataset  ==============")
+    start = time.time()
     y_predicted_valid = model.predict(X_valid)
 
     plot_kvargs = {
@@ -104,6 +106,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
         'future': future
     }
     plot_3class_colored_prediction(**plot_kvargs)
+    print("Prediction Time : ", time.time() - start)
 
     #close keras session
     K.clear_session()
