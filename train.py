@@ -21,26 +21,26 @@ def compare_trainings(dict_of_histories):
 @ExperimentFunction(display_function=display_train_result)
 def single_train( res_period, win_size, future, return_target, label_func, data_dim, num_classes, lr, batch_size, epochs):
     # list all coin pairs for the training set
-    #TRAIN_COINS_LIST = [('BTC', 2)]
-    TRAIN_COINS_LIST = [
-        ('ETH', 2), ('XRP',2), ('ETC',2), ('DASH',2), ('LTC',2),
-        ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)
-    ]
-
-
-    # lstm_layers = [
-    #     {'layer':'input', 'units':50, 'dropout':0.15},
-    #     {'layer':'l2',    'units':25, 'dropout':0.15},
-    #     #{'layer':'l3',    'units':32, 'dropout':0.15},
-    #     {'layer':'last',  'units':16, 'dropout':0.15}
+    TRAIN_COINS_LIST = [('BTC', 2)]
+    # TRAIN_COINS_LIST = [
+    #     ('ETH', 2), ('XRP',2), ('ETC',2), ('DASH',2), ('LTC',2),
+    #     ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)
     # ]
 
+
     lstm_layers = [
-        {'layer':'input', 'units':90, 'dropout':0.15},
-        {'layer':'l2',    'units':64, 'dropout':0.15},
-        {'layer':'l3',    'units':32, 'dropout':0.15},
-        {'layer':'last',  'units':16, 'dropout':0.1}
+        {'layer':'input', 'units':50, 'dropout':0.15},
+        {'layer':'l2',    'units':25, 'dropout':0.15},
+        #{'layer':'l3',    'units':32, 'dropout':0.15},
+        {'layer':'last',  'units':16, 'dropout':0.15}
     ]
+
+    # lstm_layers = [
+    #     {'layer':'input', 'units':90, 'dropout':0.15},
+    #     {'layer':'l2',    'units':64, 'dropout':0.15},
+    #     {'layer':'l3',    'units':32, 'dropout':0.15},
+    #     {'layer':'last',  'units':16, 'dropout':0.1}
+    # ]
 
     # build a dataset for training
     db_name = 'postgre_stage'   # 'prodcopy',
@@ -127,8 +127,8 @@ def add_all_experiments_variants():
     num_classes = 3
 
     lr = 0.0005
-    batch_size = 6000  # might be up to 7000 if enough memory and GPU
-    epochs = 30
+    batch_size = 512  # might be up to 7000 if enough memory and GPU
+    epochs = 1
     ###############################
     # you can give to an experiment your own name
     # my_experiment_function.add_variant('big_a', a=10000)
@@ -177,9 +177,14 @@ if __name__ == '__main__':
     # TODO: try to balance classes
     # TODO: run for different return targets and take the best performer
 
+    # we can add a single experiment to artemis by single_train
+    # or run add_all_experiments_variants() to add a numebr of experiments all together
     add_all_experiments_variants()
+
+    # by uncommenting and running this we can browse and run experiment from command line on the server
     #single_train.browse()
 
+    # or run automatically one by onw here
     variants = single_train.get_all_variants()
     experiment_1 = variants[1]
     experiment_1.run()
