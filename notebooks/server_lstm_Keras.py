@@ -1,3 +1,8 @@
+'''
+The old file which was supposed to substitute notebboks and to be run in background on AWS server
+Just for reference here, not used directly
+'''
+
 import sys
 import time
 import numpy as np
