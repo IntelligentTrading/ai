@@ -1,11 +1,16 @@
 # ittai
-a package to systematically train/retrain networks
+A package to systematically train/retrain networks.
+Uses artemis package, which allows to keep track of all experiments which were ran, then retrieve their results.
 
-### workflow
+
+### installation
 - create an AWS instance with GPU (p2.xlarge)
 - get access to it via ssh:
 ssh -i "/Users/alex/PycharmProjects/ITT/cert/alex-deeplearn.pem" ubuntu@server.amazonaws.com
 - git pull (cite command)
+
+
+### Running
 - run train.py in a background:     nohup python train.py &
 
 
