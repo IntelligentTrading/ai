@@ -1,7 +1,6 @@
-import pandas as pd
 import numpy as np
 import importlib
-from data.data_sources import get_combined_cleaned_df
+from src.data import get_combined_cleaned_df
 
 
 # TODO: do it smarter (use keras function ot scipy) or use matrix multiplication
