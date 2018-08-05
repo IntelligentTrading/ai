@@ -1,3 +1,4 @@
+import os
 import mysql.connector
 from mysql.connector import errorcode
 import psycopg2 as pg
@@ -104,18 +105,23 @@ def _get_raw_volume(db_connection, transaction_coin, counter_coin):
 def _get_raw_blockchain_data():
     pass
 
-def get_combined_cleaned_df(db_name, transaction_coin, counter_coin, res_period):
+def get_combined_cleaned_onecoin_df(db_name, transaction_coin, counter_coin, res_period):
     # get raw ts from DB
 
-    # db_connection = _ittconnection(db_name)
-    # raw_price_ts = _get_raw_price(db_connection, transaction_coin, counter_coin)
-    # raw_volume_ts = _get_raw_volume(db_connection, transaction_coin, counter_coin)
-    # raw_price_ts.to_pickle("./raw_price.pkl")
-    # raw_volume_ts.to_pickle("./raw_volume.pkl")
-    # db_connection.close()
+    # read price data from local cache, not from DB if it exists in cache
+    # CLEAN cache folder for real run! "data/raw/raw_price.pkl"
+    if os.path.isfile("data/raw/raw_price.pkl") and os.path.isfile("data/raw/raw_volume.pkl"):
+        raw_price_ts = pd.read_pickle("data/raw/raw_price.pkl")
+        raw_volume_ts = pd.read_pickle("data/raw/raw_volume.pkl")
+    else:
+        db_connection = _ittconnection(db_name)
+        raw_price_ts = _get_raw_price(db_connection, transaction_coin, counter_coin)
+        raw_volume_ts = _get_raw_volume(db_connection, transaction_coin, counter_coin)
+        raw_price_ts.to_pickle("data/raw/raw_price.pkl")
+        raw_volume_ts.to_pickle("data/raw/raw_volume.pkl")
+        db_connection.close()
 
-    raw_price_ts = pd.read_pickle("./raw_price.pkl")
-    raw_volume_ts = pd.read_pickle("./raw_volume.pkl")
+
 
     # merge because the timestamps must match, and merge left because price shall have a priority
     raw_data_frame = pd.merge(raw_price_ts, raw_volume_ts, how='left', left_index=True, right_index=True)
