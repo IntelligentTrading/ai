@@ -3,6 +3,9 @@ import importlib
 import os
 from data.data_sources import get_combined_cleaned_onecoin_df
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 # TODO: do it smarter (use keras function ot scipy) or use matrix multiplication
 def _normalize_dataset(X):
@@ -112,7 +115,7 @@ def label_2class_return_target(future_prices, return_target):
     return dummy_labels
 
 
-def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_target, label_func, num_classes):
+def get_dataset_manycoins_fused(COINS_LIST, db_name, res_period, win_size, future, return_target, label_func, num_classes):
     '''
     Build the a full dataset X, Y by fusind all datasets of each coin from COIN_LIST
     - for each pair get ts of price and volume, calculate variance and build a df [time, price, vol, price_var, vol_var]
@@ -126,6 +129,7 @@ def get_dataset_fused(COINS_LIST, db_name, res_period, win_size, future, return_
     if os.path.isfile("data/processed/X.pkl.npy") and os.path.isfile("data/processed/Y.pkl.npy"):
         X = np.load("data/processed/X.pkl.npy")
         Y = np.load("data/processed/Y.pkl.npy")
+        logging.info(" ... got dataset from cache...")
         return X, Y
 
     X = []  # (147319, 200, 4) - 4 is price, volume, price_var, volume_var

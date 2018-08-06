@@ -108,17 +108,22 @@ def _get_raw_blockchain_data():
 def get_combined_cleaned_onecoin_df(db_name, transaction_coin, counter_coin, res_period):
     # get raw ts from DB
 
+    # form the cache file name
+    f_raw_price = "data/raw/" + transaction_coin + str(counter_coin) + "_raw_price.pkl"
+    f_raw_volume = "data/raw/" + transaction_coin + str(counter_coin) + "_raw_volume.pkl"
+
     # read price data from local cache, not from DB if it exists in cache
     # CLEAN cache folder for real run! "data/raw/raw_price.pkl"
-    if os.path.isfile("data/raw/raw_price.pkl") and os.path.isfile("data/raw/raw_volume.pkl"):
-        raw_price_ts = pd.read_pickle("data/raw/raw_price.pkl")
-        raw_volume_ts = pd.read_pickle("data/raw/raw_volume.pkl")
+    if os.path.isfile(f_raw_price) and os.path.isfile(f_raw_volume):
+        raw_price_ts = pd.read_pickle(f_raw_price)
+        raw_volume_ts = pd.read_pickle(f_raw_volume)
+        print("  ...raw price/volume have been got from the cache...")
     else:
         db_connection = _ittconnection(db_name)
         raw_price_ts = _get_raw_price(db_connection, transaction_coin, counter_coin)
         raw_volume_ts = _get_raw_volume(db_connection, transaction_coin, counter_coin)
-        raw_price_ts.to_pickle("data/raw/raw_price.pkl")
-        raw_volume_ts.to_pickle("data/raw/raw_volume.pkl")
+        raw_price_ts.to_pickle(f_raw_price)
+        raw_volume_ts.to_pickle(f_raw_volume)
         db_connection.close()
 
 
