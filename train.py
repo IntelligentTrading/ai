@@ -1,15 +1,17 @@
 import time
 from artemis.experiments import ExperimentFunction
 
-from vizualization.plotting import plot_model_results, plot_3class_colored_prediction
-from data.data_sources import get_combined_cleaned_onecoin_df
-from data.datasets import get_dataset_fused
-from models.keras_models import build_lstm_model, Metrics
+from src.vizualization.plotting import plot_model_results, plot_3class_colored_prediction
+from src.data.data_sources import get_combined_cleaned_onecoin_df
+from src.data.datasets import get_dataset_manycoins_fused
+from src.models.keras_models import build_lstm_model, Metrics
 
 import tensorflow as tf
 import keras
 from keras import backend as K
 
+import logging
+logger = logging.getLogger(__name__)
 
 def display_train_result(results):
     plot_model_results(results)
@@ -45,7 +47,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     # build a dataset for training
     db_name = 'postgre_stage'   # 'prodcopy',
     print("=========== Form a TEST data set =========== ")
-    X_train, Y_train = get_dataset_fused(
+    X_train, Y_train = get_dataset_manycoins_fused(
         COINS_LIST=TRAIN_COINS_LIST,
         db_name=db_name,
         res_period=res_period,
@@ -66,7 +68,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     raw_validation_price = raw_valid_data_df['price'].values
 
     # get validation dataset for futher metrics
-    X_valid, Y_valid = get_dataset_fused(
+    X_valid, Y_valid = get_dataset_manycoins_fused(
         COINS_LIST=[(VALID_COIN,VALID_COUNTER)],
         db_name='prodcopy',
         res_period=res_period,
@@ -182,6 +184,10 @@ def add_all_experiments_variants():
 
 
 if __name__ == '__main__':
+    log_level = logging.DEBUG
+    logging.basicConfig(level=log_level)
+    logger = logging.getLogger(__name__)
+    logger.info("START")
     print("   TensorFlow = " + tf.__version__)
     print("   Keras = " + keras.__version__)
 
