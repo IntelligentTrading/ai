@@ -12,6 +12,7 @@ from keras import backend as K
 
 import logging
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 def display_train_result(results):
     plot_model_results(results)
@@ -23,7 +24,7 @@ def compare_trainings(dict_of_histories):
 @ExperimentFunction(display_function=display_train_result)
 def single_train( res_period, win_size, future, return_target, label_func, data_dim, num_classes, lr, batch_size, epochs):
     # list all coin pairs for the training set
-    TRAIN_COINS_LIST = [('BTC', 2)]
+    TRAIN_COINS_LIST = [('BTC', 2),('ETH',0)]
     # TRAIN_COINS_LIST = [
     #     ('ETH', 2), ('XRP',2), ('ETC',2), ('DASH',2), ('LTC',2),
     #     ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)
@@ -46,7 +47,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
 
     # build a dataset for training
     db_name = 'postgre_stage'   # 'prodcopy',
-    print("=========== Form a TEST data set =========== ")
+    logger.info("=========== Form a TEST data set =========== ")
     X_train, Y_train = get_dataset_manycoins_fused(
         COINS_LIST=TRAIN_COINS_LIST,
         db_name=db_name,
@@ -59,7 +60,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     )
 
     # set a validation ts (BTC/2 here, can be changed)
-    print("=========== Form a VALIDATION data set (BTC) =========== ")
+    logger.info("=========== Form a VALIDATION data set (BTC) =========== ")
     VALID_COIN = 'BTC'
     VALID_COUNTER = 2
 
@@ -98,6 +99,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
 
     #plot_model_metrics(history)
 
+    # TODO: name convention... or put it into artemis folder
     model.save("models/lstm_model.h5")
 
     ### plot colored prediction on train data
@@ -184,12 +186,9 @@ def add_all_experiments_variants():
 
 
 if __name__ == '__main__':
-    log_level = logging.DEBUG
-    logging.basicConfig(level=log_level)
-    logger = logging.getLogger(__name__)
-    logger.info("START")
-    print("   TensorFlow = " + tf.__version__)
-    print("   Keras = " + keras.__version__)
+    logger.info("::: START :::")
+    logger.info("   TensorFlow = " + tf.__version__)
+    logger.info("   Keras = " + keras.__version__)
 
     # train ANN for short period (future= 3 periods = 6 h), 288=48h back
     # TODO: try to balance classes

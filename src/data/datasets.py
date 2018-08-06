@@ -33,7 +33,7 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
     labels = np.zeros([num_examples, label_dummy_classes])
 
     # form training examples by shifting triugh the dataset
-    print("   One coin: Converting dataframe to dataset array,  " + str(num_examples) + " examples")
+    logger.info("   One coin: Converting dataframe to dataset array,  " + str(num_examples) + " examples")
     for start_example in range(0, num_examples):
         end_example = start_example + win_size
 
@@ -59,6 +59,8 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
 
         if start_example % 10000 == 0:
             print("   ... processed examples: " + str(start_example))
+
+    logger.info("   One coin: finished.")
 
     return data_set, labels
 
@@ -129,13 +131,13 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, res_period, win_size, futur
     if os.path.isfile("data/processed/X.pkl.npy") and os.path.isfile("data/processed/Y.pkl.npy"):
         X = np.load("data/processed/X.pkl.npy")
         Y = np.load("data/processed/Y.pkl.npy")
-        logging.info(" ... got dataset from cache...")
+        logger.info(" ... got dataset from cache...")
         return X, Y
 
     X = []  # (147319, 200, 4) - 4 is price, volume, price_var, volume_var
     Y = []  # (147319, 3)  - 3 is number of classes
 
-    print("> Form data set X array from a coin list:" + str(COINS_LIST))
+    logger.info("> Form data set X array from a coin list:" + str(COINS_LIST))
 
     for transaction_coin, counter_coin in COINS_LIST:
         # retrieve a time series df from DB as [time,price,volume, price_var, volume_var]
@@ -170,7 +172,7 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, res_period, win_size, futur
     X = np.delete(X, (idx2delete), axis=0)
     Y = np.delete(Y, (idx2delete), axis=0)
 
-    print("> X,Y Datasets have been built: same= " + str(sum(Y[:,0])) + ' | UP= ' + str(sum(Y[:,1])) + ' | DOWN= ' + str(sum(Y[:,2])))
+    logger.info("> X,Y Datasets have been built: same= " + str(sum(Y[:,0])) + ' | UP= ' + str(sum(Y[:,1])) + ' | DOWN= ' + str(sum(Y[:,2])))
 
     # TODO: shaffle dataset
 
@@ -179,14 +181,15 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, res_period, win_size, futur
     X = _normalize_dataset(X)
 
     # sanity check
-    print("   ... Sanity Checking for NaN in dataset: check for any nan")
+    logger.info("   ... Sanity Checking for NaN in dataset: check for any nan")
     for n in range(X.shape[0]):
         if np.isnan(X[n, :, :]).any():
-            print(n)
+            logger.info(n)
 
-    print("final X dataset shape: " + str(X.shape))
-    print("final Y dataset shape: " + str(Y.shape))
+    logger.info("final X dataset shape: " + str(X.shape))
+    logger.info("final Y dataset shape: " + str(Y.shape))
 
+    # TODO: check if folder is exists
     np.save("data/processed/X.pkl.npy", X)
     np.save("data/processed/Y.pkl.npy", Y)
 
