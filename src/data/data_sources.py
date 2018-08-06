@@ -3,7 +3,10 @@ import mysql.connector
 from mysql.connector import errorcode
 import psycopg2 as pg
 import pandas as pd
-import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 def _ittconnection(DATABASE='prodcopy'):
     if DATABASE == 'prod':
@@ -107,6 +110,7 @@ def _get_raw_blockchain_data():
 
 def get_combined_cleaned_onecoin_df(db_name, transaction_coin, counter_coin, res_period):
     # get raw ts from DB
+    logger.info("   retrieve raw coin data:" + transaction_coin + str(counter_coin))
 
     # form the cache file name
     f_raw_price = "data/raw/" + transaction_coin + str(counter_coin) + "_raw_price.pkl"
@@ -117,7 +121,7 @@ def get_combined_cleaned_onecoin_df(db_name, transaction_coin, counter_coin, res
     if os.path.isfile(f_raw_price) and os.path.isfile(f_raw_volume):
         raw_price_ts = pd.read_pickle(f_raw_price)
         raw_volume_ts = pd.read_pickle(f_raw_volume)
-        print("  ...raw price/volume have been got from the cache...")
+        logger.info("  ...raw price/volume have been got from the cache...")
     else:
         db_connection = _ittconnection(db_name)
         raw_price_ts = _get_raw_price(db_connection, transaction_coin, counter_coin)
@@ -125,12 +129,13 @@ def get_combined_cleaned_onecoin_df(db_name, transaction_coin, counter_coin, res
         raw_price_ts.to_pickle(f_raw_price)
         raw_volume_ts.to_pickle(f_raw_volume)
         db_connection.close()
+        logger.info("  ...raw price/volume have been got from DB...")
 
 
 
     # merge because the timestamps must match, and merge left because price shall have a priority
     raw_data_frame = pd.merge(raw_price_ts, raw_volume_ts, how='left', left_index=True, right_index=True)
-    print('> ' + transaction_coin + '/' + str(counter_coin) + ': get raw data from DB, number of time points: ' + str(raw_data_frame.shape[0]))
+    logger.info('> ' + transaction_coin + '/' + str(counter_coin) + ': get raw data from DB, number of time points: ' + str(raw_data_frame.shape[0]))
     raw_data_frame[pd.isnull(raw_data_frame)] = None
 
     # add variance, resample (for smoothing)
