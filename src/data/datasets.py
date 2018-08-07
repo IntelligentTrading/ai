@@ -5,7 +5,7 @@ from data.data_sources import get_combined_cleaned_onecoin_df
 
 import logging
 logger = logging.getLogger(__name__)
-
+logger.setLevel(logging.DEBUG)
 
 # TODO: do it smarter (use keras function ot scipy) or use matrix multiplication
 def _normalize_dataset(X):
@@ -63,7 +63,6 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
     logger.info("   One coin: finished.")
 
     return data_set, labels
-
 
 
 def label_3class_return_target(future_prices, return_target):
@@ -131,13 +130,14 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, res_period, win_size, futur
     if os.path.isfile("data/processed/X.pkl.npy") and os.path.isfile("data/processed/Y.pkl.npy"):
         X = np.load("data/processed/X.pkl.npy")
         Y = np.load("data/processed/Y.pkl.npy")
-        logger.info(" ... got dataset from cache...")
+        logger.info("    ... got X, Y datasets from cache:")
+        logger.info("        Y Datasets: same= " + str(sum(Y[:, 0])) + ' | UP= ' + str(sum(Y[:, 1])) + ' | DOWN= ' + str(sum(Y[:, 2])))
         return X, Y
 
     X = []  # (147319, 200, 4) - 4 is price, volume, price_var, volume_var
     Y = []  # (147319, 3)  - 3 is number of classes
 
-    logger.info("> Form data set X array from a coin list:" + str(COINS_LIST))
+    logger.info(" > Form data set X array from a coin list:" + str(COINS_LIST))
 
     for transaction_coin, counter_coin in COINS_LIST:
         # retrieve a time series df from DB as [time,price,volume, price_var, volume_var]

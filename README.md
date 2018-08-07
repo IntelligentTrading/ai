@@ -26,3 +26,11 @@ ssh -i "/Users/alex/PycharmProjects/ITT/cert/alex-deeplearn.pem" ubuntu@server.a
 
 ### description of LSTM models trained here
 I suppose to train three models, for 60 / 240 /1440 horizons
+
+
+### ARTEMIS 
+folders: ~/artemis/experiments/
+
+Experiment fields and methods:
+https://github.com/QUVA-Lab/artemis/blob/master/artemis/experiments/experiment_record.py
+

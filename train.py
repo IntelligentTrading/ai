@@ -1,6 +1,7 @@
+__author__ = 'AlexY'
+
 import time
 from artemis.experiments import ExperimentFunction
-
 from src.vizualization.plotting import plot_model_results, plot_3class_colored_prediction
 from src.data.data_sources import get_combined_cleaned_onecoin_df
 from src.data.datasets import get_dataset_manycoins_fused
@@ -47,7 +48,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
 
     # build a dataset for training
     db_name = 'postgre_stage'   # 'prodcopy',
-    logger.info("=========== Form a TEST data set =========== ")
+    logger.info("=========== Form a TRAINING data set =========== ")
     X_train, Y_train = get_dataset_manycoins_fused(
         COINS_LIST=TRAIN_COINS_LIST,
         db_name=db_name,
@@ -84,7 +85,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     model = build_lstm_model(win_size, data_dim, num_classes, lstm_layers, lr)
 
     # train the model
-    print("=========== TRAINING  ============ ")
+    logger.info("=========== TRAINING  ============ ")
     metrics = Metrics()
 
     history = model.fit(
@@ -105,9 +106,10 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     ### plot colored prediction on train data
     # get
     point=2000
-    print("===========  PREDICTING on validation dataset  ==============")
+    logger.info("===========  PREDICTING on validation dataset  ==============")
     start = time.time()
     y_predicted_valid = model.predict(X_valid)
+    logger.info("Prediction Time : " + str(time.time() - start))
 
     plot_kvargs = {
         'price': raw_validation_price,
@@ -117,7 +119,7 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
         'future': future
     }
     plot_3class_colored_prediction(**plot_kvargs)
-    print("Prediction Time : ", time.time() - start)
+
 
     #close keras session
     K.clear_session()
@@ -141,8 +143,8 @@ def add_all_experiments_variants():
     num_classes = 3  # up, same, down
 
     #lr = 0.0005
-    batch_size = 512  # might be up to 7000 if enough memory and GPU
-    epochs = 1
+    batch_size = 1024  # might be up to 7000 if enough memory and GPU
+    epochs = 2
 
     ###############################
     # you can give to an experiment your own name
@@ -205,6 +207,13 @@ if __name__ == '__main__':
     variants = single_train.get_all_variants()
     experiment_1 = variants[1]
     experiment_1.run()
+
+    experiment_1._experiment_directory
+    experiment_1.info()
+    experiment_1.list_files()
+
+
+
 
     # Try
     #   run all

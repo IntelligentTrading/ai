@@ -12,24 +12,20 @@ from keras.callbacks import Callback
 import warnings
 
 def f1_scores(y_true, y_predicted):
-    y_true=set(y_true)
-    y_predicted=set(y_predicted)
 
-    tp = len(y_true & y_predicted)
-    fp = len(y_predicted) - tp
-    fn = len(y_true) - tp
+    tp = (y_true * y_predicted).sum(axis=0)
+    fp = y_predicted.sum(axis=0) - tp
+    fn = y_true.sum(axis=0) - tp
 
-    #tp=len(y_true.intersection(y_predicted))
-    #fp=len(y_predicted.difference(y_true))
-    #fn=len(y_true.difference(y_predicted))
+    #tp = len(y_true & y_predicted)
+    #fp = len(y_predicted) - tp
+    #fn = len(y_true) - tp
 
-    if tp>0:
-        precision = float(tp)/(tp+fp)
-        recall = float(tp)/(tp+fn)
-        f1 = 2*((precision*recall)/(precision+recall))
-        return [f1, precision, recall]
-    else:
-        return 0
+    precision = tp/(tp+fp)
+    recall = tp/(tp+fn)
+    f1 = 2*((precision*recall)/(precision+recall))
+    return [f1, precision, recall]
+
 
 
 class Metrics(Callback):

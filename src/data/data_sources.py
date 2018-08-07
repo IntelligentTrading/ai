@@ -112,7 +112,7 @@ def get_combined_cleaned_onecoin_df(db_name, transaction_coin, counter_coin, res
     # get raw ts from DB
     logger.info("   retrieve raw coin data:" + transaction_coin + str(counter_coin))
 
-    # form the cache file name
+    # form the cache file names
     f_raw_price = "data/raw/" + transaction_coin + str(counter_coin) + "_raw_price.pkl"
     f_raw_volume = "data/raw/" + transaction_coin + str(counter_coin) + "_raw_volume.pkl"
 
