@@ -22,8 +22,20 @@ def compare_trainings(dict_of_histories):
     print("you can add a training comparison here to show it in UI")
 
 
+# BASIC set of parameters
+res_period = '10min'
+win_size = 288  # 48h back
+future = 24  # 4h forward
+return_target = 0.01  # need to tune it to make classes balanced
+data_dim = 4  # price, price_var, volume, volume_var
+
+label_func = 'label_3class_return_target'
+num_classes = 3  # up, same, down
+
+
 @ExperimentFunction(display_function=display_train_result)
-def single_train( res_period, win_size, future, return_target, label_func, data_dim, num_classes, lr, batch_size, epochs):
+def rnn1_single_train(res_period, win_size, future, return_target, label_func, data_dim, num_classes, lr, batch_size, epochs):
+
     # list all coin pairs for the training set
     TRAIN_COINS_LIST = [('BTC', 2),('ETH',0)]
     # TRAIN_COINS_LIST = [
@@ -32,19 +44,19 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     # ]
 
 
-    lstm_layers = [
-        {'layer':'input', 'units':50, 'dropout':0.15},
-        {'layer':'l2',    'units':25, 'dropout':0.15},
-        #{'layer':'l3',    'units':32, 'dropout':0.15},
-        {'layer':'last',  'units':16, 'dropout':0.15}
-    ]
-
     # lstm_layers = [
-    #     {'layer':'input', 'units':90, 'dropout':0.15},
-    #     {'layer':'l2',    'units':64, 'dropout':0.15},
-    #     {'layer':'l3',    'units':32, 'dropout':0.15},
-    #     {'layer':'last',  'units':16, 'dropout':0.1}
+    #     {'layer':'input', 'units':50, 'dropout':0.15},
+    #     {'layer':'l2',    'units':25, 'dropout':0.15},
+    #     #{'layer':'l3',    'units':32, 'dropout':0.15},
+    #     {'layer':'last',  'units':16, 'dropout':0.15}
     # ]
+
+    lstm_layers = [
+        {'layer':'input', 'units':90, 'dropout':0.15},
+        {'layer':'l2',    'units':64, 'dropout':0.15},
+        {'layer':'l3',    'units':32, 'dropout':0.15},
+        {'layer':'last',  'units':16, 'dropout':0.1}
+    ]
 
     # build a dataset for training
     db_name = 'postgre_stage'   # 'prodcopy',
@@ -120,11 +132,11 @@ def single_train( res_period, win_size, future, return_target, label_func, data_
     }
     plot_3class_colored_prediction(**plot_kvargs)
 
-
     #close keras session
     K.clear_session()
 
     return history.history, metrics.get_scores(), plot_kvargs
+
 
 
 def add_all_experiments_variants():
@@ -133,24 +145,15 @@ def add_all_experiments_variants():
     so if we need to train several models with some sligtly different parameters, we add all of them here
     '''
     # parameters of the dataset and model
-    res_period = '10min'
-    win_size = 288  # 48h back
-    future = 24  # 4h forward
-    return_target = 0.01  # need to tune it to make classes balanced
-    data_dim = 4  # price, price_var, volume, volume_var
 
-    label_func = 'label_3class_return_target'
-    num_classes = 3  # up, same, down
-
-    #lr = 0.0005
+    lr = 0.0005
     batch_size = 1024  # might be up to 7000 if enough memory and GPU
     epochs = 2
 
     ###############################
-    # you can give to an experiment your own name
-    # my_experiment_function.add_variant('big_a', a=10000)
+    # you can give to an experiment your own name: my_experiment_function.add_variant('big_a', a=10000)
 
-    single_train.add_variant(
+    rnn1_single_train.add_variant(
         'basic model 1 batch',
         res_period=res_period,
         win_size=win_size,
@@ -159,23 +162,11 @@ def add_all_experiments_variants():
         label_func=label_func,
         data_dim=data_dim,
         num_classes=num_classes,
-        lr=0.0006,
+        lr=lr,
         batch_size=batch_size,
         epochs=epochs
     )
 
-    # single_train.add_variant(
-    #     res_period=res_period,
-    #     win_size=win_size,
-    #     future=future,
-    #     return_target=return_target,
-    #     label_func=label_func,
-    #     data_dim=data_dim,
-    #     num_classes=num_classes,
-    #     lr=0.01,
-    #     batch_size=batch_size,
-    #     epochs=epochs
-    # )
 
 
 #TODO
@@ -203,8 +194,8 @@ if __name__ == '__main__':
     # by uncommenting and running this we can browse and run experiment from command line on the server
     #single_train.browse()
 
-    # or run automatically one by onw here
-    variants = single_train.get_all_variants()
+    # or run automatically one by one here
+    variants = rnn1_single_train.get_all_variants()
     experiment_1 = variants[1]
     experiment_1.run()
 
