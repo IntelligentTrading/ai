@@ -31,6 +31,9 @@ I suppose to train three models, for 60 / 240 /1440 horizons
 ### ARTEMIS 
 folders: ~/artemis/experiments/
 
+http://artemis-ml.readthedocs.io/en/latest/experiments.html
+
+
 Experiment fields and methods:
 https://github.com/QUVA-Lab/artemis/blob/master/artemis/experiments/experiment_record.py
 
