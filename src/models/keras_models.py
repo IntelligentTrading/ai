@@ -11,6 +11,8 @@ from keras.callbacks import Callback
 
 import warnings
 
+np.set_printoptions(precision=3)
+
 def f1_scores(y_true, y_predicted):
 
     tp = (y_true * y_predicted).sum(axis=0)
@@ -50,7 +52,7 @@ class Metrics(Callback):
         self.val_f1s.append(_val_f1)
         self.val_recalls.append(_val_recall)
         self.val_precisions.append(_val_precision)
-        print('      > val_f1: %.3f — val_precision: %.3f — val_recall %.3f'  % (_val_f1, _val_precision, _val_recall))
+        print('      > valid_f1: %s;   valid_precision: %s ;   valid_recall: %s'  % (str(_val_f1), str(_val_precision), str(_val_recall)))
         return
 
     def get_scores(self):
