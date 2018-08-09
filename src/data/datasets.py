@@ -1,9 +1,10 @@
 import numpy as np
 import importlib
 import os
-from data.data_sources import get_combined_cleaned_onecoin_df
+from src.data.data_sources import get_combined_cleaned_onecoin_df
 
 import logging
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 

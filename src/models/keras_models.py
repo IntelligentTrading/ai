@@ -19,10 +19,6 @@ def f1_scores(y_true, y_predicted):
     fp = y_predicted.sum(axis=0) - tp
     fn = y_true.sum(axis=0) - tp
 
-    #tp = len(y_true & y_predicted)
-    #fp = len(y_predicted) - tp
-    #fn = len(y_true) - tp
-
     precision = tp/(tp+fp)
     recall = tp/(tp+fn)
     f1 = 2*((precision*recall)/(precision+recall))
@@ -39,13 +35,6 @@ class Metrics(Callback):
     def on_epoch_end(self, epoch, logs={}):
         val_predict = (np.asarray(self.model.predict(self.validation_data[0]))).round()
         val_targ = self.validation_data[1]
-
-        # # irnore warnings of ill defined scores
-        # with warnings.catch_warnings():
-        #     warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
-        #     _val_f1 = f1_score(y_true=val_targ, y_pred=val_predict, average=None)   # can change averate to weitherd?
-        #     _val_recall = recall_score(y_true=val_targ, y_pred=val_predict, average=None)
-        #     _val_precision = precision_score(y_true=val_targ, y_pred=val_predict, average=None)
 
         _val_f1, _val_precision, _val_recall = f1_scores(y_true=val_targ, y_predicted=val_predict)
 
