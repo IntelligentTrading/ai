@@ -34,6 +34,7 @@ def plot_model_results(results):
     scores = results[1]
     plot_kvargs = results[2]
 
+    print("==== Plot training progress of loss and accuracy:")
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(8, 4))
     axes[0, 0].set_title('train loss')
     axes[0, 0].plot(history['loss'])
@@ -49,10 +50,11 @@ def plot_model_results(results):
 
     plt.show(block=False) # block=False
 
-    print("FInal Scores:")
+    print("===== Final Scores (plot_model_results):")
     print(" f1       :" + str(scores['f1']))
     print(" recall   :" + str(scores['recall']))
     print(" precision:" + str(scores['precision']))
 
     # plot colored price
+    print("==== Plot prediction  ==== ")
     plot_3class_colored_prediction(**plot_kvargs)

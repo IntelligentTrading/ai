@@ -18,6 +18,7 @@ logger.setLevel(logging.DEBUG)
 def display_train_result(results):
     plot_model_results(results)
 
+
 def compare_trainings(dict_of_histories):
     print("you can add a training comparison here to show it in UI")
 
@@ -152,34 +153,22 @@ if __name__ == '__main__':
     # we can add a single experiment to artemis by single_train
     # or run add_all_experiments_variants() to add a numebr of experiments all together
 
-    experiment_1 = rnn_1_train_basic.add_variant(lr=0.001)
+    experiment_small = rnn_1_train_basic.add_variant('small', lr=0.0005, batch_size=6000,epochs = 30)
+    experiment_medium = rnn_1_train_basic.add_variant('medium', train_coin_list=TRAIN_COINS_LIST, lr=0.001, batch_size=6000, epochs = 30)
 
-    record_1 = experiment_1.run()
-    record_2 = experiment_1.run()
-
-    record_1.get_log()
-    record_1.get_result()
+    experiment_small.run()
 
 
 
-
-    ############## BROWSE ####################
-    # by uncommenting and running this we can browse and run experiment from command line on the server
-    #rnn1_single_train.browse()
-
-    # Try
-    #   run all
-    #   compare all
-    #   display 1
-    # view full           View all columns (the default view)
-    # delete 4.1          Delete record 1 of experiment 4
-    # delete unfinished   Delete all experiment records that have not run to completion
-    # delete 4-6          Delete all records from experiments 4, 5, 6.  You will be asked to confirm the deletion.
+    # record_1 = experiment_1.run()
+    # record_2 = experiment_1.run()
+    #
+    # record_1.get_log()
+    # record_1.get_result()
 
 
 
 
-###########################################################
 
 # TODO:
 # - leave what I have as price_direction_indicator, with two classes and make them balanced (undersampling? adjusting delta?)
