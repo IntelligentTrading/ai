@@ -52,7 +52,7 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
         future_prices = data_df[end_example:end_example + future]['price']
 
         #build X array
-        module = importlib.import_module('data.datasets')
+        module = importlib.import_module('src.data.datasets')
         func_obj = getattr(module, label_func)
 
         labels[start_example, :] = func_obj(future_prices, return_target)
