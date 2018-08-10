@@ -1,5 +1,6 @@
 __author__ = 'AlexY'
 
+import shutil
 import time
 from artemis.experiments import ExperimentFunction
 from src.vizualization.plotting import plot_model_results, plot_3class_colored_prediction
@@ -29,7 +30,7 @@ TRAIN_COINS_LIST = [
 ]
 
 
-@ExperimentFunction(display_function=display_train_result)
+@ExperimentFunction(display_function=display_train_result,  is_root=True)
 def rnn_1_train_basic(
         train_coin_list=[('BTC', 2), ('ETH', 0)],
         res_period='10min',
@@ -43,6 +44,7 @@ def rnn_1_train_basic(
         epochs = 3):
 
     data_dim = 4  # price, price_var, volume, volume_var
+
 
     lstm_layers = [
         {'layer':'input', 'units':90, 'dropout':0.15},
@@ -130,7 +132,7 @@ def rnn_1_train_basic(
     #close keras session
     K.clear_session()
 
-    return history.history, metrics.get_scores(), plot_kvargs
+    return history.history, metrics.get_scores(), plot_kvargs, model
 
 #TODO
 # add a lot of performance measures
@@ -153,18 +155,23 @@ if __name__ == '__main__':
     # we can add a single experiment to artemis by single_train
     # or run add_all_experiments_variants() to add a numebr of experiments all together
 
-    experiment_small = rnn_1_train_basic.add_variant('small', lr=0.0005, batch_size=6000,epochs = 30)
-    experiment_medium = rnn_1_train_basic.add_variant('medium', train_coin_list=TRAIN_COINS_LIST, lr=0.001, batch_size=6000, epochs = 30)
+    variant_test = rnn_1_train_basic.add_variant('test', lr=0.001, batch_size=1024, epochs=1)
+    variant_small = rnn_1_train_basic.add_variant('small', lr=0.0005, batch_size=6000,epochs = 30)
+    variant_medium = rnn_1_train_basic.add_variant('medium', train_coin_list=TRAIN_COINS_LIST, lr=0.001, batch_size=6000, epochs = 30)
 
-    experiment_small.run()
+    record_test = variant_test.run(keep_record=True)
+    shutil.move("models/lstm_model.h5", record_test.get_dir())
+
+    # record_medium = variant_medium.run(keep_record=True)
+    # shutil.move("models/lstm_model.h5", record_medium.get_dir())
 
 
+    # variant = rnn_1_train_basic.get_variant('test')
+    # records = variant.get_records()
+    # records[0].info
+    # f_to = records[0].get_dir()
 
-    # record_1 = experiment_1.run()
-    # record_2 = experiment_1.run()
-    #
-    # record_1.get_log()
-    # record_1.get_result()
+
 
 
 
