@@ -165,7 +165,7 @@ if __name__ == '__main__':
     record_medium = variant_medium.run(keep_record=True)
     shutil.move("models/lstm_model.h5", record_medium.get_dir())
 
-    logger.info("::: COMPLETED :::")
+    logger.info("============ ::: COMPLETED ::: ============")
 
 
     # variant = rnn_1_train_basic.get_variant('test')

@@ -128,6 +128,7 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, res_period, win_size, futur
     # return from cache if files exists
     # CLEAN  the cache before real run!
 
+    # TODO: add name to cache
     if os.path.isfile("data/processed/X.pkl.npy") and os.path.isfile("data/processed/Y.pkl.npy"):
         X = np.load("data/processed/X.pkl.npy")
         Y = np.load("data/processed/Y.pkl.npy")
