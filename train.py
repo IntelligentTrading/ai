@@ -60,7 +60,7 @@ def rnn_1_train_basic(
 
     # build a dataset for training
     db_name = 'postgre_stage'   # 'prodcopy',
-    logger.info("=========== Form a TRAINING data set =========== ")
+    logger.info(">>>>>>>> Form a TRAINING data set ")
     X_train, Y_train = get_dataset_manycoins_fused(
         COINS_LIST=train_coin_list,
         db_name=db_name,
@@ -73,7 +73,7 @@ def rnn_1_train_basic(
     )
 
     # set a validation ts (BTC/2 here, can be changed)
-    logger.info("=========== Form a VALIDATION data set (BTC) =========== ")
+    logger.info(">>>>>>>>> Form a VALIDATION data set (BTC) ")
     VALID_COIN = 'BTC'
     VALID_COUNTER = 2
 
@@ -99,7 +99,7 @@ def rnn_1_train_basic(
     model = build_lstm_model(win_size, data_dim, num_classes, lstm_layers, lr)
 
     # train the model
-    logger.info("=========== TRAINING  ===================== ")
+    logger.info(">>>>>>>>>>>>>>>>>> START TRAINING  ")
     metrics = Metrics()
 
     history = model.fit(
@@ -120,7 +120,7 @@ def rnn_1_train_basic(
     ### plot colored prediction on train data
     # get
     point=2000
-    logger.info("===========  PREDICTING on validation dataset  ==============")
+    logger.info(">>>>>>>>>>  PREDICTING on validation dataset")
     start = time.time()
     y_predicted_valid = model.predict(X_valid)
     logger.info("Prediction Time : " + str(time.time() - start))
@@ -162,7 +162,7 @@ if __name__ == '__main__':
 
     #variant_test = rnn_1_train_basic.add_variant('test', lr=0.001, batch_size=1024, epochs=1)
     #variant_small = rnn_1_train_basic.add_variant('small', lr=0.0005, batch_size=6000,epochs = 30)
-    variant_medium = rnn_1_train_basic.add_variant('medium', train_coin_list=TRAIN_COINS_LIST, lr=0.005, batch_size=6500, epochs = 200)
+    variant_medium = rnn_1_train_basic.add_variant('medium', train_coin_list=TRAIN_COINS_LIST, lr=0.002, batch_size=6800, epochs = 200)
 
     #record_test = variant_test.run(keep_record=True)
     #shutil.move("models/lstm_model.h5", record_test.get_dir())
@@ -186,6 +186,7 @@ if __name__ == '__main__':
 
 
 # TODO:
+# - try validation on several currencies, not only BTC
 # - leave what I have as price_direction_indicator, with two classes and make them balanced (undersampling? adjusting delta?)
 #    - so we can build a signal as indicator changed from - to +
 # - add one more ANN which is a signal by itself, with anomaly detection approach with NN
