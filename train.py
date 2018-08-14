@@ -29,6 +29,11 @@ TRAIN_COINS_LIST = [
     ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)
 ]
 
+TRAIN_COINS_LIST_2 = [
+    ('ETH', 2), ('XRP',2), ('ETC',2), ('DASH',2), ('LTC',2),
+    ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)
+]
+
 
 @ExperimentFunction(display_function=display_train_result,  is_root=True)
 def rnn_1_train_basic(
@@ -158,12 +163,14 @@ if __name__ == '__main__':
     variant_test = rnn_1_train_basic.add_variant('test', lr=0.001, batch_size=1024, epochs=1)
     variant_small = rnn_1_train_basic.add_variant('small', lr=0.0005, batch_size=6000,epochs = 30)
     variant_medium = rnn_1_train_basic.add_variant('medium', train_coin_list=TRAIN_COINS_LIST, lr=0.0008, batch_size=6500, epochs = 100)
+    #variant_medium_2 = rnn_1_train_basic.add_variant('medium 2', train_coin_list=TRAIN_COINS_LIST_2, lr=0.005, batch_size=7000, epochs=200)
 
     #record_test = variant_test.run(keep_record=True)
     #shutil.move("models/lstm_model.h5", record_test.get_dir())
 
-    record_medium = variant_medium.run(keep_record=True)
-    shutil.move("models/lstm_model.h5", record_medium.get_dir())
+
+    record_medium_2 = variant_medium.run(keep_record=True)
+    shutil.move("models/lstm_model.h5", record_medium_2.get_dir())
 
     logger.info("============ ::: COMPLETED ::: ============")
 
