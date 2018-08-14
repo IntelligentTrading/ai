@@ -149,7 +149,7 @@ def rnn_1_train_basic(
 
 
 if __name__ == '__main__':
-    logger.info("::: START :::")
+    logger.info(">>>>>>>>>>>   START <<<<<<<<<<<< ")
     logger.info("   TensorFlow = " + tf.__version__)
     logger.info("   Keras = " + keras.__version__)
 
@@ -160,19 +160,18 @@ if __name__ == '__main__':
     # we can add a single experiment to artemis by single_train
     # or run add_all_experiments_variants() to add a numebr of experiments all together
 
-    variant_test = rnn_1_train_basic.add_variant('test', lr=0.001, batch_size=1024, epochs=1)
-    variant_small = rnn_1_train_basic.add_variant('small', lr=0.0005, batch_size=6000,epochs = 30)
-    variant_medium = rnn_1_train_basic.add_variant('medium', train_coin_list=TRAIN_COINS_LIST, lr=0.0008, batch_size=6500, epochs = 100)
-    #variant_medium_2 = rnn_1_train_basic.add_variant('medium 2', train_coin_list=TRAIN_COINS_LIST_2, lr=0.005, batch_size=7000, epochs=200)
+    #variant_test = rnn_1_train_basic.add_variant('test', lr=0.001, batch_size=1024, epochs=1)
+    #variant_small = rnn_1_train_basic.add_variant('small', lr=0.0005, batch_size=6000,epochs = 30)
+    variant_medium = rnn_1_train_basic.add_variant('medium', train_coin_list=TRAIN_COINS_LIST, lr=0.005, batch_size=7200, epochs = 200)
 
     #record_test = variant_test.run(keep_record=True)
     #shutil.move("models/lstm_model.h5", record_test.get_dir())
 
+    # move generated model to the same artemis folder where all information is placed
+    record_medium = variant_medium.run(keep_record=True)
+    shutil.move("models/lstm_model.h5", record_medium.get_dir())
 
-    record_medium_2 = variant_medium.run(keep_record=True)
-    shutil.move("models/lstm_model.h5", record_medium_2.get_dir())
-
-    logger.info("============ ::: COMPLETED ::: ============")
+    logger.info(">>>>>>>>>>>>>> ::: COMPLETED ::: <<<<<<<<<<<<<< ")
 
 
     # variant = rnn_1_train_basic.get_variant('test')

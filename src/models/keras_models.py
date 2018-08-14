@@ -49,7 +49,6 @@ class Metrics(Callback):
 
 
 
-
 def build_lstm_model(win_size_timesteps, data_dim,num_classes, layers_dict, lr):
     # expected input data shape: (batch_size, timesteps, data_dim)
 

@@ -34,8 +34,8 @@ def plot_model_results(results):
     scores = results[1]
     plot_kvargs = results[2]
 
-    print("==== Plot training progress of loss and accuracy:")
-    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(8, 4))
+    print("==== Training progress of loss and accuracy (based on keras):")
+    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 8))
     axes[0, 0].set_title('train loss')
     axes[0, 0].plot(history['loss'])
 
@@ -50,11 +50,11 @@ def plot_model_results(results):
 
     plt.show(block=False) # block=False
 
-    print("===== Final Scores (plot_model_results):")
-    print(" f1       :" + str(scores['f1']))
-    print(" recall   :" + str(scores['recall']))
-    print(" precision:" + str(scores['precision']))
+    print("===== Final Custom Scores (for all classes) :")
+    print(" f1       :" + str(scores['f1'][-1]))
+    print(" recall   :" + str(scores['recall'][-1]))
+    print(" precision:" + str(scores['precision'][-1]))
 
     # plot colored price
-    print("==== Plot prediction  ==== ")
+    print("==== Plot prediction on BTC ==== ")
     plot_3class_colored_prediction(**plot_kvargs)
