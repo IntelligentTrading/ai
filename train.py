@@ -29,11 +29,14 @@ TRAIN_COINS_LIST = [
     ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)
 ]
 
-TRAIN_COINS_LIST_2 = [
+TRAIN_COINS_LIST_TOP20 = [
     ('ETH', 2), ('XRP',2), ('ETC',2), ('DASH',2), ('LTC',2),
-    ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)
+    ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0),
+    ('BCH', 0), ('EOS', 0), ('XLM', 0), ('ADA', 0), ('MIOTA', 0), ('TRX',0),
+    ('NEO', 0), ('XEM', 0), ('ZEC', 0)
 ]
 
+TRAIN_COINS_LIST_BOTTOM15 = []
 
 @ExperimentFunction(display_function=display_train_result,  is_root=True)
 def rnn_1_train_basic(
@@ -138,6 +141,33 @@ def rnn_1_train_basic(
     K.clear_session()
 
     return history.history, metrics.get_scores(), plot_kvargs
+
+
+
+@ExperimentFunction(display_function=display_train_result,  is_root=True)
+def rnn_train_short(
+        train_coin_list=[('ETH', 0), ("ETC", 0), ('OMG', 0)],
+        res_period='10min',
+        win_size=288,
+        future=24,
+        return_target=0.01,
+        label_func='label_3class_return_target',
+        num_classes=3,
+        lr=0.0008,
+        batch_size=1024,
+        epochs = 3):
+
+    data_dim = 4  # price, price_var, volume, volume_var
+
+
+    lstm_layers = [
+        {'layer':'input', 'units':90, 'dropout':0.15},
+        {'layer':'l2',    'units':64, 'dropout':0.1},
+        {'layer':'l3',    'units':32, 'dropout':0.05},
+        {'layer':'last',  'units':16, 'dropout':0.01}
+    ]
+    #return history.history, metrics.get_scores(), plot_kvargs
+
 
 #TODO
 # add a lot of performance measures
