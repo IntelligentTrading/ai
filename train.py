@@ -16,6 +16,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+
 def display_train_result(results):
     plot_model_results(results)
 
@@ -63,33 +64,10 @@ def rnn_1_train_basic(
 
     # build a dataset for training
     db_name = 'postgre_stage'   # 'prodcopy',
-    logger.info(">>>>>>>> Form a TRAINING data set ")
+    logger.info(">>>>>>>>>>>>>> Build a TRAINING data set ")
     X_train, Y_train = get_dataset_manycoins_fused(
         COINS_LIST=train_coin_list,
         db_name=db_name,
-        res_period=res_period,
-        win_size=win_size,
-        future=future,
-        return_target=return_target,
-        label_func=label_func,
-        num_classes=num_classes
-    )
-
-    # set a validation ts (BTC/2 here, can be changed)
-    logger.info(">>>>>>>>> Form a VALIDATION data set (BTC) ")
-    VALID_COIN = 'BTC'
-    VALID_COUNTER = 2
-
-    # get validation price
-    logger.info("   need price for plotting:")
-    raw_valid_data_df = get_combined_cleaned_onecoin_df(db_name=db_name, transaction_coin=VALID_COIN, counter_coin=VALID_COUNTER, res_period=res_period)
-    raw_validation_price = raw_valid_data_df['price'].values
-
-    # get validation dataset for futher metrics
-    logger.info("   get X,Y for validation dataset:")
-    X_valid, Y_valid = get_dataset_manycoins_fused(
-        COINS_LIST=[(VALID_COIN,VALID_COUNTER)],
-        db_name='prodcopy',
         res_period=res_period,
         win_size=win_size,
         future=future,
@@ -103,7 +81,7 @@ def rnn_1_train_basic(
 
     # train the model
     logger.info(">>>>>>>>>>>>>>>>>> START TRAINING  ")
-    metrics = Metrics()
+    metrics = Metrics()  # define custom metrics for keras
 
     history = model.fit(
         X_train,
@@ -115,15 +93,41 @@ def rnn_1_train_basic(
         verbose = 2         # 0 = silent, 1 = progress bar, 2 = one line per epoch
     )
 
+    model.save("models/lstm_model_basic.h5")
+
     #plot_model_metrics(history)
 
-    # TODO: name convention... or put it into artemis folder
-    model.save("models/lstm_model.h5")
+
+    ################## Form an independent validation dataset from BTC
+    # TODO: check prediction on more datasets, like ETC etc
+
+    logger.info(">>>>>>>>> Build a VALIDATION data set (BTC) ")
+    VALID_COIN = 'BTC'
+    VALID_COUNTER = 2
+
+    # get price for validation coin
+    logger.info("   :: get BTC price ts for plotting:")
+    raw_valid_data_df = get_combined_cleaned_onecoin_df(db_name=db_name, transaction_coin=VALID_COIN,
+                                                        counter_coin=VALID_COUNTER, res_period=res_period)
+    raw_validation_price = raw_valid_data_df['price'].values
+
+    # get validation dataset for futher metrics
+    logger.info("   :: build X,Y for validation dataset:")
+    X_valid, Y_valid = get_dataset_manycoins_fused(
+        COINS_LIST=[(VALID_COIN, VALID_COUNTER)],
+        db_name='prodcopy',
+        res_period=res_period,
+        win_size=win_size,
+        future=future,
+        return_target=return_target,
+        label_func=label_func,
+        num_classes=num_classes
+    )
 
     ### plot colored prediction on train data
     # get
-    point=2000
-    logger.info(">>>>>>>>>>  PREDICTING on validation dataset")
+    point=2500
+    logger.info(">>>>>>>>>>  PREDICTING and plotting on validation dataset (BTC)")
     start = time.time()
     y_predicted_valid = model.predict(X_valid)
     logger.info("Prediction Time : " + str(time.time() - start))
@@ -143,8 +147,7 @@ def rnn_1_train_basic(
     return history.history, metrics.get_scores(), plot_kvargs
 
 
-
-@ExperimentFunction(display_function=display_train_result,  is_root=True)
+#@ExperimentFunction(display_function=display_train_result,  is_root=True)
 def rnn_train_short(
         train_coin_list=[('ETH', 0), ("ETC", 0), ('OMG', 0)],
         res_period='10min',
@@ -159,13 +162,45 @@ def rnn_train_short(
 
     data_dim = 4  # price, price_var, volume, volume_var
 
-
     lstm_layers = [
         {'layer':'input', 'units':90, 'dropout':0.15},
         {'layer':'l2',    'units':64, 'dropout':0.1},
         {'layer':'l3',    'units':32, 'dropout':0.05},
         {'layer':'last',  'units':16, 'dropout':0.01}
     ]
+
+    # build a dataset for training
+    db_name = 'postgre_stage'  # 'prodcopy',
+    logger.info(">>>>>>>>>>>>>> Build a TRAINING data set ")
+    X_train, Y_train = get_dataset_manycoins_fused(
+        COINS_LIST=train_coin_list,
+        db_name=db_name,
+        res_period=res_period,
+        win_size=win_size,
+        future=future,
+        return_target=return_target,
+        label_func=label_func,
+        num_classes=num_classes
+    )
+
+    # build a model
+    model = build_lstm_model(win_size, data_dim, num_classes, lstm_layers, lr)
+
+    # train the model
+    logger.info(">>>>>>>>>>>>>>>>>> START TRAINING  ")
+    metrics = Metrics()  # define custom metrics for keras
+
+    history = model.fit(
+        X_train,
+        Y_train,
+        batch_size=batch_size,
+        epochs=epochs,
+        validation_split=0.15,
+        callbacks=[metrics],
+        verbose=2  # 0 = silent, 1 = progress bar, 2 = one line per epoch
+    )
+
+    model.save("models/lstm_model_short.h5")
     #return history.history, metrics.get_scores(), plot_kvargs
 
 

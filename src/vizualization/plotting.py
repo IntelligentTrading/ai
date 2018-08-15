@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+np.set_printoptions(precision=3)
+
 def plot_3class_colored_prediction(price, y_predicted, point, win_size, future):
     start_of_train_position = point
     position_on_plot = point + win_size
