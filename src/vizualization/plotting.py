@@ -1,7 +1,9 @@
+__author__ = 'AlexBioY'
 import matplotlib.pyplot as plt
 import numpy as np
 
 np.set_printoptions(precision=3)
+
 
 def plot_3class_colored_prediction(price, y_predicted, point, win_size, future):
     start_of_train_position = point
@@ -35,6 +37,10 @@ def plot_model_results(results):
     history = results[0]
     scores = results[1]
     plot_kvargs = results[2]
+    model_summary_str = results[3]
+
+    print("==== Model summary:")
+    print(model_summary_str)
 
     print("==== Training progress of loss and accuracy (based on keras):")
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 8))

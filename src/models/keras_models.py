@@ -13,6 +13,7 @@ import warnings
 
 np.set_printoptions(precision=3)
 
+# I have to implement it from scratch because AWS image crashes with scipy metrics for some reason
 def f1_scores(y_true, y_predicted):
 
     tp = (y_true * y_predicted).sum(axis=0)
@@ -20,10 +21,9 @@ def f1_scores(y_true, y_predicted):
     fn = y_true.sum(axis=0) - tp
 
     precision = tp/(tp+fp)
-    recall = tp/(tp+fn)
+    recall = tp/(tp+fn)  # how accurate we predict every positives ( fn - those who shall be predicted but they are not
     f1 = 2*((precision*recall)/(precision+recall))
     return [f1, precision, recall]
-
 
 
 class Metrics(Callback):
@@ -41,7 +41,7 @@ class Metrics(Callback):
         self.val_f1s.append(_val_f1)
         self.val_recalls.append(_val_recall)
         self.val_precisions.append(_val_precision)
-        print('      > valid_f1: %s;   valid_precision: %s ;   valid_recall: %s'  % (str(_val_f1), str(_val_precision), str(_val_recall)))
+        print('      + val_f1: %s || val_precision: %s || val_recall: %s'  % (str(_val_f1), str(_val_precision), str(_val_recall)))
         return
 
     def get_scores(self):
@@ -72,7 +72,5 @@ def build_lstm_model(win_size_timesteps, data_dim,num_classes, layers_dict, lr):
         optimizer=optimizer,
         metrics=['accuracy'] #, metrics.categorical_accuracy]
     )
-
-    #print(model.summary())
 
     return model
