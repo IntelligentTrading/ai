@@ -1,12 +1,18 @@
+__author__ = 'AlexBioY'
 import numpy as np
 import importlib
 import os
+from collections import namedtuple
+
 from src.data.data_sources import get_combined_cleaned_onecoin_df
+from src.data.settings import  DATASET_TRANSFORM
 
 import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+
 
 # TODO: do it smarter (use keras function ot scipy) or use matrix multiplication
 def _normalize_dataset(X):
@@ -18,7 +24,7 @@ def _normalize_dataset(X):
     return X
 
 
-def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, future, return_target):
+def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, future, return_target,res_period):
     '''
     Transform an input ts into array [ examples, time points back fatures (LSTM modules), feature dimension ],
     Labels can be set to a different
@@ -117,7 +123,7 @@ def label_2class_return_target(future_prices, return_target):
     return dummy_labels
 
 
-def get_dataset_manycoins_fused(COINS_LIST, db_name, res_period, win_size, future, return_target, label_func, num_classes):
+def get_dataset_manycoins_fused(COINS_LIST, db_name, ds_transform):
     '''
     Build the a full dataset X, Y by fusind all datasets of each coin from COIN_LIST
     - for each pair get ts of price and volume, calculate variance and build a df [time, price, vol, price_var, vol_var]
@@ -125,13 +131,16 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, res_period, win_size, futur
     - pile them up int one dataset
     '''
 
-    # return from cache if files exists
-    # CLEAN  the cache before real run!
+    ds_name = ds_transform
+    res_period = DATASET_TRANSFORM[ds_transform].res_period
 
-    # TODO: add name to cache
-    if os.path.isfile("data/processed/X.pkl.npy") and os.path.isfile("data/processed/Y.pkl.npy"):
-        X = np.load("data/processed/X.pkl.npy")
-        Y = np.load("data/processed/Y.pkl.npy")
+    # return from cache if files exists
+    # TODO: CLEAN  the cache before real run!
+    fname_x = 'X_'+ ds_name + '.pkl.npy'
+    fname_y = 'Y_' + ds_name + '.pkl.npy'
+    if os.path.isfile("data/processed/" + fname_x) and os.path.isfile("data/processed/" + fname_y):
+        X = np.load("data/processed/" + fname_x)
+        Y = np.load("data/processed/" + fname_y)
         logger.info("    ... got X, Y datasets from cache:")
         logger.info("        Y Datasets: same= " + str(sum(Y[:, 0])) + ' | UP= ' + str(sum(Y[:, 1])) + ' | DOWN= ' + str(sum(Y[:, 2])))
         return X, Y
@@ -148,12 +157,7 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, res_period, win_size, futur
         # convert this df into a array of shape of (147319, 200, 4) = (examples, time_back, features)
         X_train_one, Y_train_one = one_coin_array_from_df(
             data_df=data_df,
-            win_size=win_size,
-            stride=1,
-            label_func=label_func,
-            num_classes=num_classes,
-            future=future,
-            return_target=return_target
+            **DATASET_TRANSFORM[ds_transform]._asdict()  # all parameters of data transformation are in data.settings
         )
         del data_df
 
@@ -192,7 +196,7 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, res_period, win_size, futur
     logger.info("final Y dataset shape: " + str(Y.shape))
 
     # TODO: check if folder is exists
-    np.save("data/processed/X.pkl.npy", X)
-    np.save("data/processed/Y.pkl.npy", Y)
+    np.save("data/processed/"+fname_x, X)
+    np.save("data/processed/"+fname_y, Y)
 
     return X, Y
