@@ -10,7 +10,7 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future):
     position_on_plot = point + win_size
     end_of_future_position = point + win_size + future
 
-    fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(10, 4))
+    # color each dor according to prediction: if UP-> green, if DOWN->red
     col3 = []
     for p in y_predicted:
         idx = np.argmax(p)
@@ -22,13 +22,14 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future):
             color = 'black'
         col3.append(color)
 
+    fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(10, 4))
     ax1.scatter(range(price.shape[0]), price, c=col3, s=1)
 
     ax1.axvline(position_on_plot, color=col3[position_on_plot], lw=1)
     ax1.axvline(end_of_future_position, color=col3[position_on_plot], lw=1)
     ax1.axvline(start_of_train_position, color='blue')
 
-    plt.show(block=False)
+    plt.show(block=True)
 
 
 def plot_model_results(results):
@@ -39,8 +40,8 @@ def plot_model_results(results):
     plot_kvargs = results[2]
     model_summary_str = results[3]
 
-    print("==== Model summary:")
-    print(model_summary_str)
+    #print("==== Model summary:")
+    #print(model_summary_str)
 
     print("==== Training progress of loss and accuracy (based on keras):")
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 8))
@@ -58,10 +59,10 @@ def plot_model_results(results):
 
     plt.show(block=False) # block=False
 
-    print("===== Final Custom Scores (for all classes) :")
-    print(" f1       :" + str(scores['f1'][-1]))
-    print(" recall   :" + str(scores['recall'][-1]))
-    print(" precision:" + str(scores['precision'][-1]))
+    print("===== Final Custom Scores from Training validation set [SAME, UP, DOWN] :")
+    print(" f1        :" + str(scores['f1'][-1]))
+    print(" recall    :" + str(scores['recall'][-1]))
+    print(" precision :" + str(scores['precision'][-1]))
 
     # plot colored price
     print("==== Plot prediction on BTC ==== ")

@@ -1,25 +1,20 @@
 __author__ = 'Alex Y'
 
-from train import rnn_1_train_basic
+from train import rnn_train_basic
+from src.data.settings import TRAIN_COINS_LIST_BASIC, TRAIN_COINS_LIST_TOP20
 
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-TRAIN_COINS_LIST = [
-    ('ETH', 2), ('XRP',2), ('ETC',2), ('DASH',2), ('LTC',2),
-    ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0)
-]
-
 if __name__ == '__main__':
     logger.info("::: START :::")
 
-    variant_test = rnn_1_train_basic.add_variant('test', lr=0.001, batch_size=1024, epochs=1)
-    variant_small = rnn_1_train_basic.add_variant('small', lr=0.0005, batch_size=6000, epochs=30)
-    variant_medium = rnn_1_train_basic.add_variant('medium', train_coin_list=TRAIN_COINS_LIST, lr=0.0008,
-                                                   batch_size=6500, epochs=100)
+    variant_small = rnn_train_basic.add_variant('small')
+    variant_medium = rnn_train_basic.add_variant('medium')
+    variant_test = rnn_train_basic.add_variant(variant_name='test')
 
-    rnn_1_train_basic.browse()
+    rnn_train_basic.browse()
 
 
 
