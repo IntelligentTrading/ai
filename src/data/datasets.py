@@ -1,3 +1,5 @@
+#TODO : use a Timeseries Generator of Keras : https://keras.io/preprocessing/sequence/
+
 __author__ = 'AlexBioY'
 import numpy as np
 import importlib
@@ -64,8 +66,8 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
         labels[start_example, :] = func_obj(future_prices, return_target)
         # assert the array dimencions
 
-        if start_example % 10000 == 0:
-            print("   ... processed examples: " + str(start_example))
+        if start_example % 3000 == 0:
+            logger.info("   ... df->array examples completed: " + str(start_example))
 
     logger.info("   One coin: finished.")
 
@@ -142,7 +144,7 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, ds_transform):
         X = np.load("data/processed/" + fname_x)
         Y = np.load("data/processed/" + fname_y)
         logger.info("    ... got X, Y datasets from cache:")
-        logger.info("        Y Datasets: same= " + str(sum(Y[:, 0])) + ' | UP= ' + str(sum(Y[:, 1])) + ' | DOWN= ' + str(sum(Y[:, 2])))
+        logger.info("        Y statistics: same= " + str(sum(Y[:, 0])) + ' | UP= ' + str(sum(Y[:, 1])) + ' | DOWN= ' + str(sum(Y[:, 2])))
         return X, Y
 
     X = []  # (147319, 200, 4) - 4 is price, volume, price_var, volume_var
@@ -155,10 +157,8 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, ds_transform):
         data_df = get_combined_cleaned_onecoin_df(db_name, transaction_coin, counter_coin, res_period)
 
         # convert this df into a array of shape of (147319, 200, 4) = (examples, time_back, features)
-        X_train_one, Y_train_one = one_coin_array_from_df(
-            data_df=data_df,
-            **DATASET_TRANSFORM[ds_transform]._asdict()  # all parameters of data transformation are in data.settings
-        )
+        # all parameters of data transformation are in data.settings
+        X_train_one, Y_train_one = one_coin_array_from_df(data_df=data_df, **DATASET_TRANSFORM[ds_transform]._asdict()  )
         del data_df
 
         # pile up into one array
@@ -192,11 +192,15 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, ds_transform):
         if np.isnan(X[n, :, :]).any():
             logger.info(n)
 
-    logger.info("final X dataset shape: " + str(X.shape))
-    logger.info("final Y dataset shape: " + str(Y.shape))
+    logger.info("=======> final X dataset shape: " + str(X.shape))
+    logger.info("=======> final Y dataset shape: " + str(Y.shape))
 
     # TODO: check if folder is exists
     np.save("data/processed/"+fname_x, X)
     np.save("data/processed/"+fname_y, Y)
 
     return X, Y
+
+
+def balance_classes(X, Y):
+    pass
