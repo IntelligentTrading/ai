@@ -22,23 +22,23 @@ if __name__ == '__main__':
     # TODO: try to balance classes
     # TODO: run for different return targets and take the best performer
 
-    ################## local test variant ##########
-    test_transform = 'short_60m_96_4_3class_return_0.02'
-    test_layers = [
+    ################## local variant ##########
+    local_short_transform = 'short_60m_96_8_3class_return_0.04'
+    local_short_layers = [
         {'layer': 'input', 'units': 128, 'dropout': 0.1},
         {'layer': 'l2', 'units': 64, 'dropout': 0.05},
         {'layer': 'l3', 'units': 32, 'dropout': 0.03},
         {'layer': 'l4', 'units': 32, 'dropout': 0.02},
         {'layer': 'last', 'units': 16, 'dropout': 0.001}
     ]
-    variant_test = rnn_train_basic.add_variant(
-        variant_name='test',
-        ds_transform=test_transform,
-        lstm_layers=test_layers,
+    variant_local_short = rnn_train_basic.add_variant(
+        variant_name='local_short',
+        ds_transform=local_short_transform,
+        lstm_layers=local_short_layers,
         train_coin_list = TRAIN_COINS_LIST_BASIC,
         lr=0.009,
-        batch_size=4096,
-        epochs=5
+        batch_size=1024,
+        epochs=50
     )
 
 
@@ -60,10 +60,10 @@ if __name__ == '__main__':
         epochs = 200
     )
 
-    ################## SHORT variant  ###################
+    ################## SHORT server variant  ###################
     ##  another transformation, less dropout
-    ds_transform_2 = 'short_60m_96_4_3class_return_0.02'
-    lstm_layers_2 = [
+    ds_transform_server_short = 'short_60m_96_4_3class_return_0.02'
+    lstm_layers_server_short = [
         {'layer': 'input', 'units': 96, 'dropout': 0.1},
         {'layer': 'l2', 'units': 64, 'dropout': 0.1},
         {'layer': 'l3', 'units': 32, 'dropout': 0.05},
@@ -71,9 +71,9 @@ if __name__ == '__main__':
         {'layer': 'last', 'units': 16, 'dropout': 0.01}
     ]
     variant_short = rnn_train_basic.add_variant(
-        variant_name=ds_transform_2,  # comes from a decorator
-        ds_transform=ds_transform_2,
-        lstm_layers=lstm_layers_2,
+        variant_name='server_short',  # comes from a decorator
+        ds_transform=ds_transform_server_short,
+        lstm_layers=lstm_layers_server_short,
         train_coin_list=TRAIN_COINS_LIST_TOP20,
         lr=0.009,
         batch_size=6000,
@@ -83,8 +83,8 @@ if __name__ == '__main__':
 
 
     ############### RUN variants ######################
-    record_test = variant_test.run(keep_record=True, display_results=True)
-    shutil.move("models/lstm_" + test_transform + ".h5", record_test.get_dir())
+    record_test = variant_local_short.run(keep_record=True, display_results=True)
+    shutil.move("models/lstm_" + local_short_transform + ".h5", record_test.get_dir())
 
     # move generated model to the same artemis folder where all information is placed
     #record_medium = variant_medium.run(keep_record=True)
@@ -93,7 +93,6 @@ if __name__ == '__main__':
 
     #record_short = variant_short.run(keep_record=True, display_results=True)
     #shutil.move("models/lstm_" + ds_transform_2 + ".h5", record_short.get_dir())
-
 
 
     logger.info(">>>>>>>>>>>>>> ::: COMPLETED ::: <<<<<<<<<<<<<< ")

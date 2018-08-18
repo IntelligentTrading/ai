@@ -165,7 +165,7 @@ def rnn_train_basic(
     #show f1 score on validation data
     val_predict = (y_predicted_valid == y_predicted_valid.max(axis=1)[:, None]).astype(int)
     _val_f1, _val_precision, _val_recall = f1_scores(y_true=Y_valid, y_predicted=val_predict)
-    print('  [same,up,down] F1: %s || PRECISION: tp/(tp+fp) : %s || RECALL: tp/(tp+fn) : %s' % (str(_val_f1), str(_val_precision), str(_val_recall)))
+    logger.info('  Valid on BTC [same,up,down] =  F1: %s || PRECISION: tp/(tp+fp) : %s || RECALL: tp/(tp+fn) : %s' % (str(_val_f1), str(_val_precision), str(_val_recall)))
 
     plot_kvargs = {
         'price': raw_validation_price,

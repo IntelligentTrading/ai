@@ -27,4 +27,7 @@ if __name__ == '__main__':
     # delete 4.1          Delete record 1 of experiment 4
     # delete unfinished   Delete all experiment records that have not run to completion
     # delete 4-6          Delete all records from experiments 4, 5, 6.  You will be asked to confirm the deletion.
+
+    # display 2.16
+
     ###########################################################

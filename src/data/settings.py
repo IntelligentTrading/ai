@@ -27,5 +27,7 @@ DatasetType = namedtuple('DatasetType', 'res_period win_size stride future label
 DATASET_TRANSFORM = {
     'basic_10m_288_24_3class_return0.01': DatasetType(res_period='10min', win_size=288, stride=1, future=24, label_func='label_3class_return_target', num_classes=3, return_target=0.01),
     'short_60m_96_4_3class_return_0.02': DatasetType(res_period='60min', win_size=96, stride=1, future=4, label_func='label_3class_return_target', num_classes=3, return_target=0.02),
+    'short_60m_96_8_3class_return_0.04': DatasetType(res_period='60min', win_size=96, stride=1, future=8, label_func='label_3class_return_target', num_classes=3, return_target=0.04),
+
 }
 
