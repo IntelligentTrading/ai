@@ -133,19 +133,19 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, ds_transform):
     - pile them up int one dataset
     '''
 
-    ds_name = ds_transform
     res_period = DATASET_TRANSFORM[ds_transform].res_period
 
+    # comment cache because validation dataset is also cached
     # return from cache if files exists
-    # TODO: CLEAN  the cache before real run!
-    fname_x = 'X_'+ ds_name + '.pkl.npy'
-    fname_y = 'Y_' + ds_name + '.pkl.npy'
-    if os.path.isfile("data/processed/" + fname_x) and os.path.isfile("data/processed/" + fname_y):
-        X = np.load("data/processed/" + fname_x)
-        Y = np.load("data/processed/" + fname_y)
-        logger.info("    ... got X, Y datasets from cache:")
-        logger.info("        Y statistics: same= " + str(sum(Y[:, 0])) + ' | UP= ' + str(sum(Y[:, 1])) + ' | DOWN= ' + str(sum(Y[:, 2])))
-        return X, Y
+    # ds_name = ds_transform
+    # fname_x = 'X_'+ ds_name + '.pkl.npy'
+    # fname_y = 'Y_' + ds_name + '.pkl.npy'
+    # if os.path.isfile("data/processed/" + fname_x) and os.path.isfile("data/processed/" + fname_y):
+    #     X = np.load("data/processed/" + fname_x)
+    #     Y = np.load("data/processed/" + fname_y)
+    #     logger.info("    ... got X, Y datasets from cache:")
+    #     logger.info("        Y statistics: same= " + str(sum(Y[:, 0])) + ' | UP= ' + str(sum(Y[:, 1])) + ' | DOWN= ' + str(sum(Y[:, 2])))
+    #     return X, Y
 
     X = []  # (147319, 200, 4) - 4 is price, volume, price_var, volume_var
     Y = []  # (147319, 3)  - 3 is number of classes
@@ -180,8 +180,6 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, ds_transform):
 
     logger.info("> X,Y Datasets have been built: same= " + str(sum(Y[:,0])) + ' | UP= ' + str(sum(Y[:,1])) + ' | DOWN= ' + str(sum(Y[:,2])))
 
-    # TODO: shaffle dataset
-
     # normalize
     # TODO: can I do it in-place?
     X = _normalize_dataset(X)
@@ -195,12 +193,9 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, ds_transform):
     logger.info("=======> final X dataset shape: " + str(X.shape))
     logger.info("=======> final Y dataset shape: " + str(Y.shape))
 
-    # TODO: check if folder is exists
-    np.save("data/processed/"+fname_x, X)
-    np.save("data/processed/"+fname_y, Y)
+    # # TODO: check if folder is exists
+    # np.save("data/processed/"+fname_x, X)
+    # np.save("data/processed/"+fname_y, Y)
 
     return X, Y
 
-
-def balance_classes(X, Y):
-    pass
