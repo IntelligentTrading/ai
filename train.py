@@ -37,8 +37,8 @@ if __name__ == '__main__':
         lstm_layers=test_layers,
         train_coin_list = TRAIN_COINS_LIST_BASIC,
         lr=0.009,
-        batch_size=2048,
-        epochs=120
+        batch_size=4096,
+        epochs=5
     )
 
 
