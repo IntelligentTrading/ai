@@ -152,7 +152,7 @@ def rnn_train_basic(
 
     # get validation dataset for futher metrics
     logger.info("   :: build X,Y for validation dataset:")
-    X_valid, Y_valid = one_coin_array_from_df(data_df=raw_valid_data_df, **DATASET_TRANSFORM[ds_transform]._asdict())
+    X_valid, Y_valid = get_dataset_manycoins_fused([(VALID_COIN,VALID_COUNTER)], db_name, ds_transform=ds_transform)
 
     ### plot colored prediction on train data
     # get

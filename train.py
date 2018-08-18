@@ -38,7 +38,7 @@ if __name__ == '__main__':
         train_coin_list = TRAIN_COINS_LIST_BASIC,
         lr=0.009,
         batch_size=2048,
-        epochs=100
+        epochs=120
     )
 
 
@@ -85,7 +85,6 @@ if __name__ == '__main__':
     ############### RUN variants ######################
     record_test = variant_test.run(keep_record=True, display_results=True)
     shutil.move("models/lstm_" + test_transform + ".h5", record_test.get_dir())
-    rnn_train_basic.browse()
 
     # move generated model to the same artemis folder where all information is placed
     #record_medium = variant_medium.run(keep_record=True)
