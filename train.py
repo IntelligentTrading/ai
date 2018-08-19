@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # TODO: run for different return targets and take the best performer
 
     ################## local variant ##########
-    local_short_transform = 'short_60m_96_8_3class_return_0.04'
+    local_short_transform = 'short_60m_96_4_3class_return_0.02'
     local_short_layers = [
         {'layer': 'input', 'units': 128, 'dropout': 0.1},
         {'layer': 'l2', 'units': 64, 'dropout': 0.05},
@@ -36,9 +36,9 @@ if __name__ == '__main__':
         ds_transform=local_short_transform,
         lstm_layers=local_short_layers,
         train_coin_list = TRAIN_COINS_LIST_BASIC,
-        lr=0.009,
-        batch_size=1024,
-        epochs=50
+        lr=0.01,
+        batch_size=4096,
+        epochs=60
     )
 
 

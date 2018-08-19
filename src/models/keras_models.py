@@ -132,7 +132,7 @@ def rnn_train_basic(
         callbacks=[metrics],
         verbose = 2,         # 0 = silent, 1 = progress bar, 2 = one line per epoch
         shuffle=True,
-        class_weight={0:1., 1:8., 2:8.}
+        class_weight={0:1., 1:10., 2:10.}
     )
 
     model.save("models/lstm_" + ds_transform + ".h5")
@@ -172,7 +172,8 @@ def rnn_train_basic(
         'y_predicted': y_predicted_valid,
         'point': point,
         'win_size': win_size,
-        'future': future
+        'future': future,
+        'y_true': Y_valid
     }
 
 

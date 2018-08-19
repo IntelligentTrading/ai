@@ -5,12 +5,13 @@ import numpy as np
 np.set_printoptions(precision=3)
 
 
-def plot_3class_colored_prediction(price, y_predicted, point, win_size, future):
+def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, y_true):
     start_of_train_position = point
     position_on_plot = point + win_size
     end_of_future_position = point + win_size + future
 
     # color each dor according to prediction: if UP-> green, if DOWN->red
+    # for PREDICTED
     col3 = []
     for p in y_predicted:
         idx = np.argmax(p)
@@ -22,7 +23,19 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future):
             color = 'black'
         col3.append(color)
 
-    fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(10, 4))
+    col3_true = []
+    for p in y_true:
+        idx = np.argmax(p)
+        if idx == 1:
+            color = 'green'
+        elif idx == 2:
+            color = 'red'
+        else:
+            color = 'black'
+        col3_true.append(color)
+
+    fig, [ax1, ax2] = plt.subplots(nrows=1, ncols=2, figsize=(10, 8))
+    ax2.scatter(range(price.shape[0]), price, c=col3_true, s=1)
     ax1.scatter(range(price.shape[0]), price, c=col3, s=1)
 
     ax1.axvline(start_of_train_position, color='blue')
