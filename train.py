@@ -46,20 +46,20 @@ if __name__ == '__main__':
     ##  another transformation, less dropout
     ds_transform_server_short = 'short_60m_48_4_3class_return_0.02'
     lstm_layers_server_short = [
-        {'layer': 'input', 'units': 128, 'dropout': 0.1},
-        {'layer': 'l2', 'units': 64, 'dropout': 0.05},
-        {'layer': 'l3', 'units': 32, 'dropout': 0.03},
-        {'layer': 'l4', 'units': 32, 'dropout': 0.02},
-        {'layer': 'last', 'units': 16, 'dropout': 0.001}
+        {'layer': 'input', 'units': 128, 'dropout': 0.15},
+        {'layer': 'l2', 'units': 64, 'dropout': 0.1},
+        {'layer': 'l3', 'units': 32, 'dropout': 0.1},
+        {'layer': 'l4', 'units': 32, 'dropout': 0.05},
+        {'layer': 'last', 'units': 16, 'dropout': 0.01}
     ]
     variant_short = rnn_train_basic.add_variant(
         variant_name='server_short',  # comes from a decorator
         ds_transform=ds_transform_server_short,
         lstm_layers=lstm_layers_server_short,
         train_coin_list=TRAIN_COINS_LIST_TOP20,
-        lr=0.01,
-        batch_size=5000,
-        epochs=150
+        lr=0.02,
+        batch_size=6000,
+        epochs=200
     )
     ##################################################
 

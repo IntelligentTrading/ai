@@ -34,7 +34,7 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, 
             color = 'black'
         col3_true.append(color)
 
-    fig, [ax1, ax2] = plt.subplots(nrows=1, ncols=2, figsize=(10, 8))
+    fig, [ax1, ax2] = plt.subplots(nrows=2, ncols=1, figsize=(10, 8))
     ax2.scatter(range(price.shape[0]), price, c=col3_true, s=1)
 
     ax1.scatter(range(price.shape[0]), price, c=col3, s=1)
@@ -57,7 +57,7 @@ def plot_model_results(results):
     final_val_scores = results[4]
 
     print("===== Model summary:")
-    print(model_summary_str)
+    #print(model_summary_str)
 
     print("======= Training progress of loss and accuracy (based on keras):")
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 8))
@@ -82,7 +82,9 @@ def plot_model_results(results):
 
     # plot colored price
     print("======= Plot prediction on BTC ==== ")
-    plot_3class_colored_prediction(**plot_kvargs)
-    print('[same,up,down]>>  F1: %s || PRECISION: tp/(tp+fp) : %s || RECALL: tp/(tp+fn) : %s' %
-          (str(final_val_scores['_val_f1']), str(final_val_scores['_val_precision']), str(final_val_scores['_val_recall'])))
 
+    print("  [same,up,down]>> PRECISION: tp/(tp+fp)  ||  RECALL: tp/(tp+fn)")
+    print('  F1: %s ||  PRECISION: %s  ||  RECALL: %s' %
+          (str(final_val_scores['f1']), str(final_val_scores['precision']), str(final_val_scores['recall'])))
+
+    plot_3class_colored_prediction(**plot_kvargs)
