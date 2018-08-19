@@ -53,11 +53,16 @@ def plot_model_results(results):
     history = results[0]
     train_val_scores = results[1]
     plot_kvargs = results[2]
-    model_summary_str = results[3]
+    model_config_dict = results[3]
     final_val_scores = results[4]
 
     print("===== Model summary:")
-    #print(model_summary_str)
+    for layer in model_config_dict:
+        print(
+            str(layer['class_name']) + '= units:' + str(layer['config']['units']) +
+              ', activation: ' + str(layer['config']['activation'] +
+              ', dropout: '
+         ))
 
     print("======= Training progress of loss and accuracy (based on keras):")
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 8))

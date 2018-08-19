@@ -38,7 +38,7 @@ if __name__ == '__main__':
         train_coin_list = TRAIN_COINS_LIST_BASIC,
         lr=0.01,
         batch_size=64,
-        epochs=30
+        epochs=1
     )
 
 

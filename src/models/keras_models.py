@@ -28,7 +28,7 @@ def f1_scores(y_true, y_predicted):
     tp = ((y_true * y_predicted).sum(axis=0)).astype(int)
     fp = (y_predicted.sum(axis=0) - tp).astype(int)
     fn = (y_true.sum(axis=0) - tp).astype(int)
-    logger.debug("    tp = %s, fp = %s, fn = %s" % (str(tp), str(fp),str(fn)))
+    print("    tp = %s, fp = %s, fn = %s" % (str(tp), str(fp),str(fn)))
 
     precision = tp/(tp+fp)
     recall = tp/(tp+fn)  # how accurate we predict every positives ( fn - those who shall be predicted but they are not
