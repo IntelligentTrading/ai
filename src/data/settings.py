@@ -12,8 +12,8 @@ TRAIN_COINS_LIST_BASIC = [
 TRAIN_COINS_LIST_TOP20 = [
     ('ETH', 2), ('XRP',2), ('ETC',2), ('DASH',2), ('LTC',2),
     ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0),
-    ('BCH', 0), ('EOS', 0), ('XLM', 0), ('ADA', 0), ('MIOTA', 0), ('TRX',0),
-    ('NEO', 0), ('XEM', 0), ('ZEC', 0)
+    ('BCH', 0), ('EOS', 0), ('XLM', 0), ('ADA', 0), ('TRX',0),
+    ('NEO', 0), ('XEM', 0), ('ZEC', 0), ('BNB',0), ('VET',0)
 ]
 
 TRAIN_COINS_LIST_BOTTOM15 = []
