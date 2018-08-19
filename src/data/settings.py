@@ -16,6 +16,15 @@ TRAIN_COINS_LIST_TOP20 = [
     ('NEO', 0), ('XEM', 0), ('ZEC', 0), ('BNB',0), ('VET',0)
 ]
 
+TRAIN_COINS_LIST_TOP30 = [
+    ('ETH', 2), ('XRP',2), ('ETC',2), ('DASH',2), ('LTC',2),
+    ('ETH', 0), ("ETC", 0), ('OMG', 0), ('XRP', 0), ('XMR', 0), ('LTC', 0),
+    ('BCH', 0), ('EOS', 0), ('XLM', 0), ('ADA', 0), ('TRX',0),
+    ('NEO', 0), ('XEM', 0), ('ZEC', 0), ('BNB',0), ('VET',0),
+
+]
+
+
 TRAIN_COINS_LIST_BOTTOM15 = []
 
 
@@ -29,6 +38,12 @@ DATASET_TRANSFORM = {
     'short_60m_96_4_3class_return_0.02': DatasetType(res_period='60min', win_size=96, stride=1, future=4, label_func='label_3class_return_target', num_classes=3, return_target=0.02),
     'short_60m_96_4_3class_return_0.05': DatasetType(res_period='60min', win_size=96, stride=1, future=4, label_func='label_3class_return_target', num_classes=3, return_target=0.05),
     'short_60m_48_4_3class_return_0.02': DatasetType(res_period='60min', win_size=48, stride=1, future=4, label_func='label_3class_return_target', num_classes=3, return_target=0.02),
+
+    'medium_240m_48_4_3class_return_0.01': DatasetType(res_period='240min', win_size=48, stride=1, future=4, label_func='label_3class_return_target', num_classes=3, return_target=0.01),
+
+    'medium_1440m_48_4_3class_return_0.01': DatasetType(res_period='1440min', win_size=48, stride=1, future=4,
+                                                       label_func='label_3class_return_target', num_classes=3,
+                                                       return_target=0.01),
 
 }
 
