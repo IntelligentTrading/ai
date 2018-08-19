@@ -5,7 +5,7 @@ import numpy as np
 np.set_printoptions(precision=3)
 
 
-def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, y_true):
+def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, y_true): # , y_true
     start_of_train_position = point
     position_on_plot = point + win_size
     end_of_future_position = point + win_size + future
@@ -51,14 +51,15 @@ def plot_model_results(results):
     # results is a dictionary of dictionaries of all returning results from the experiment
 
     history = results[0]
-    scores = results[1]
+    train_val_scores = results[1]
     plot_kvargs = results[2]
     model_summary_str = results[3]
+    final_val_scores = results[4]
 
     print("===== Model summary:")
     print(model_summary_str)
 
-    print("===== Training progress of loss and accuracy (based on keras):")
+    print("======= Training progress of loss and accuracy (based on keras):")
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 8))
     axes[0, 0].set_title('train loss')
     axes[0, 0].plot(history['loss'])
@@ -74,11 +75,14 @@ def plot_model_results(results):
 
     plt.show(block=False) # block=False
 
-    print("===== Final Custom Scores from Training validation set [SAME, UP, DOWN] :")
-    print(" f1        :" + str(scores['f1'][-1]))
-    print(" recall    :" + str(scores['recall'][-1]))
-    print(" precision :" + str(scores['precision'][-1]))
+    print(" Scores from Training validation set [SAME, UP, DOWN] :")
+    print(" f1        :" + str(train_val_scores['f1'][-1]))
+    print(" recall    :" + str(train_val_scores['recall'][-1]))
+    print(" precision :" + str(train_val_scores['precision'][-1]))
 
     # plot colored price
-    print("===== Plot prediction on BTC ==== ")
+    print("======= Plot prediction on BTC ==== ")
     plot_3class_colored_prediction(**plot_kvargs)
+    print('[same,up,down]>>  F1: %s || PRECISION: tp/(tp+fp) : %s || RECALL: tp/(tp+fn) : %s' %
+          (str(final_val_scores['_val_f1']), str(final_val_scores['_val_precision']), str(final_val_scores['_val_recall'])))
+

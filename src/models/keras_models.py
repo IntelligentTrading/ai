@@ -180,4 +180,4 @@ def rnn_train_basic(
     #close keras session
     K.clear_session()
 
-    return history.history, metrics.get_scores(), plot_kvargs, model.get_config()
+    return history.history, metrics.get_scores(), plot_kvargs, model.get_config(), {'f1':_val_f1, 'precision':_val_precision, 'recall':_val_recall}

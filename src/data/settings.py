@@ -28,6 +28,7 @@ DATASET_TRANSFORM = {
     'basic_10m_288_24_3class_return0.01': DatasetType(res_period='10min', win_size=288, stride=1, future=24, label_func='label_3class_return_target', num_classes=3, return_target=0.01),
     'short_60m_96_4_3class_return_0.02': DatasetType(res_period='60min', win_size=96, stride=1, future=4, label_func='label_3class_return_target', num_classes=3, return_target=0.02),
     'short_60m_96_4_3class_return_0.05': DatasetType(res_period='60min', win_size=96, stride=1, future=4, label_func='label_3class_return_target', num_classes=3, return_target=0.05),
+    'short_60m_48_4_3class_return_0.02': DatasetType(res_period='60min', win_size=48, stride=1, future=4, label_func='label_3class_return_target', num_classes=3, return_target=0.02),
 
 }
 

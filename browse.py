@@ -10,9 +10,10 @@ logger.setLevel(logging.DEBUG)
 if __name__ == '__main__':
     logger.info("::: START :::")
 
-    variant_small = rnn_train_basic.add_variant('small')
-    variant_medium = rnn_train_basic.add_variant('medium')
-    variant_test = rnn_train_basic.add_variant(variant_name='test')
+    rnn_train_basic.add_variant('small')
+    rnn_train_basic.add_variant('medium')
+    rnn_train_basic.add_variant(variant_name='test')
+    rnn_train_basic.add_variant(variant_name='local_short')
 
     rnn_train_basic.browse()
 
