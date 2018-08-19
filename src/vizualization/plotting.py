@@ -34,7 +34,7 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, 
             color = 'black'
         col3_true.append(color)
 
-    fig, [ax1, ax2] = plt.subplots(nrows=2, ncols=1, figsize=(10, 8))
+    fig, [ax1, ax2] = plt.subplots(nrows=2, ncols=1, figsize=(14, 8))
     ax2.scatter(range(price.shape[0]), price, c=col3_true, s=1)
 
     ax1.scatter(range(price.shape[0]), price, c=col3, s=1)
