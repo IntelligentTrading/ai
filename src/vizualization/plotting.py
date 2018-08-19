@@ -36,8 +36,10 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, 
 
     fig, [ax1, ax2] = plt.subplots(nrows=2, ncols=1, figsize=(14, 8))
     ax2.scatter(range(price.shape[0]), price, c=col3_true, s=1)
+    ax2.set_title(" TRUE LABELS ")
 
     ax1.scatter(range(price.shape[0]), price, c=col3, s=1)
+    ax1.set_title(" predicted Labels ")
 
     ax1.axvline(start_of_train_position, color='blue')
     ax1.axvline(position_on_plot, color=col3[position_on_plot], lw=1)
@@ -55,6 +57,8 @@ def plot_model_results(results):
     plot_kvargs = results[2]
     model_config_dict = results[3]
     final_val_scores = results[4]
+
+    print("===== Data Transformation ======")
 
     print("===== Model summary:")
     for layer in model_config_dict:
