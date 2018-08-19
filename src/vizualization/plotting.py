@@ -36,6 +36,7 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, 
 
     fig, [ax1, ax2] = plt.subplots(nrows=1, ncols=2, figsize=(10, 8))
     ax2.scatter(range(price.shape[0]), price, c=col3_true, s=1)
+
     ax1.scatter(range(price.shape[0]), price, c=col3, s=1)
 
     ax1.axvline(start_of_train_position, color='blue')
@@ -43,8 +44,7 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, 
 
     ax1.axvline(end_of_future_position, color=col3[position_on_plot], lw=1)
 
-
-    plt.show(block=True)
+    plt.show(block=False)
 
 
 def plot_model_results(results):

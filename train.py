@@ -58,15 +58,15 @@ if __name__ == '__main__':
         lstm_layers=lstm_layers_server_short,
         train_coin_list=TRAIN_COINS_LIST_TOP20,
         lr=0.01,
-        batch_size=6000,
+        batch_size=5000,
         epochs=150
     )
     ##################################################
 
 
     ############### RUN variants ######################
-    #record_test = variant_local_short.run(keep_record=True, display_results=True)
-    #shutil.move("models/lstm_" + local_short_transform + ".h5", record_test.get_dir())
+    # record_test = variant_local_short.run(keep_record=True, display_results=True)
+    # shutil.move("models/lstm_" + local_short_transform + ".h5", record_test.get_dir())
 
 
     record_server_short = variant_short.run(keep_record=True)
