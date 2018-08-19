@@ -38,7 +38,7 @@ if __name__ == '__main__':
         train_coin_list = TRAIN_COINS_LIST_BASIC,
         lr=0.01,
         batch_size=64,
-        epochs=1
+        epochs=3
     )
 
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         train_coin_list=TRAIN_COINS_LIST_TOP20,
         lr=0.02,
         batch_size=128,
-        epochs=80
+        epochs=60
     )
     ##################################################
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
         train_coin_list=TRAIN_COINS_LIST_TOP20,
         lr=0.02,
         batch_size=128,
-        epochs=80
+        epochs=60
     )
     ##################################################
 
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         train_coin_list=TRAIN_COINS_LIST_TOP20,
         lr=0.02,
         batch_size=128,
-        epochs=100
+        epochs=60
     )
     ##################################################
 
