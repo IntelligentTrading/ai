@@ -132,7 +132,7 @@ def rnn_train_basic(
         callbacks=[metrics],
         verbose = 2,         # 0 = silent, 1 = progress bar, 2 = one line per epoch
         shuffle=True,
-        class_weight={0:1., 1:12., 2:12.} # we have unbalanced classes: SAME is always mode then up and down
+        class_weight={0:1., 1:15., 2:15.} # we have unbalanced classes: SAME is always mode then up and down
     )
 
     model.save("models/lstm_" + ds_transform + ".h5")

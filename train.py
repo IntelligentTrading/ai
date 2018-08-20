@@ -59,7 +59,7 @@ if __name__ == '__main__':
         train_coin_list=TRAIN_COINS_LIST_TOP20,
         lr=0.02,
         batch_size=128,
-        epochs=25
+        epochs=20
     )
     ##################################################
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
         train_coin_list=TRAIN_COINS_LIST_TOP20,
         lr=0.02,
         batch_size=128,
-        epochs=25
+        epochs=8
     )
     ##################################################
 
@@ -101,19 +101,19 @@ if __name__ == '__main__':
         train_coin_list=TRAIN_COINS_LIST_TOP20,
         lr=0.02,
         batch_size=128,
-        epochs=25
+        epochs=8
     )
     ##################################################
 
 
     ############### RUN variants ######################
-    record_test = variant_local_short.run(keep_record=True, display_results=True)
-    shutil.move("models/lstm_" + local_short_transform + ".h5", record_test.get_dir())
-
-
-    logger.info('================ start short training  ===============')
-    record_server_short = variant_short.run(keep_record=True)
-    shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
+    # record_test = variant_local_short.run(keep_record=True, display_results=True)
+    # shutil.move("models/lstm_" + local_short_transform + ".h5", record_test.get_dir())
+    #
+    #
+    # logger.info('================ start short training  ===============')
+    # record_server_short = variant_short.run(keep_record=True)
+    # shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
 
     logger.info('================ start medium training  ===============')
     record_server_medium = variant_medium.run(keep_record=True)
