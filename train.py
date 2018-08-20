@@ -14,7 +14,7 @@ logger.setLevel(logging.DEBUG)
 
 
 if __name__ == '__main__':
-    logger.info(">>>>>>>>>>>   START <<<<<<<<<<<< ")
+    logger.info(">>>>>>>>>>>   START TRAINING SCRIPT  <<<<<<<<<<<< ")
     logger.info("   TensorFlow = " + tf.__version__)
     logger.info("   Keras = " + keras.__version__)
 
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # TODO: run for different return targets and take the best performer
 
     ################## local variant ##################
-    local_short_transform = 'short_60m_48_4_3class_return_0.02'
+    local_short_transform = 'short_60m_96_8_3class_return_0.04'
     local_short_layers = [
         {'layer': 'input', 'units': 128, 'dropout': 0.1},
         {'layer': 'l2', 'units': 64, 'dropout': 0.05},
@@ -38,13 +38,13 @@ if __name__ == '__main__':
         train_coin_list = TRAIN_COINS_LIST_BASIC,
         lr=0.01,
         batch_size=64,
-        epochs=3
+        epochs=10
     )
 
 
     ################## SHORT server variant  ###################
     ##  another transformation, less dropout
-    ds_transform_server_short = 'short_60m_48_4_3class_return_0.02'
+    ds_transform_server_short = 'short_60m_96_8_3class_return_0.04'
     lstm_layers_server_short = [
         {'layer': 'input', 'units': 128, 'dropout': 0.01},
         {'layer': 'l2', 'units': 64, 'dropout': 0.01},
@@ -59,13 +59,13 @@ if __name__ == '__main__':
         train_coin_list=TRAIN_COINS_LIST_TOP20,
         lr=0.02,
         batch_size=128,
-        epochs=60
+        epochs=25
     )
     ##################################################
 
     ################## MEDIUM server variant  ###################
     ##  another transformation, less dropout
-    ds_transform_server_medium = 'medium_240m_48_4_3class_return_0.01'
+    ds_transform_server_medium = 'medium_60m_192_24_3class_return_0.1'
     lstm_layers_server_medium = [
         {'layer': 'input', 'units': 128, 'dropout': 0.01},
         {'layer': 'l2', 'units': 64, 'dropout': 0.01},
@@ -80,13 +80,13 @@ if __name__ == '__main__':
         train_coin_list=TRAIN_COINS_LIST_TOP20,
         lr=0.02,
         batch_size=128,
-        epochs=60
+        epochs=25
     )
     ##################################################
 
     ################## LONG server variant  ###################
     ##  another transformation, less dropout
-    ds_transform_server_long = 'medium_1440m_48_4_3class_return_0.01'
+    ds_transform_server_long = 'long_60m_576_72_3class_return_0.2'
     lstm_layers_server_long = [
         {'layer': 'input', 'units': 128, 'dropout': 0.01},
         {'layer': 'l2', 'units': 64, 'dropout': 0.01},
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         train_coin_list=TRAIN_COINS_LIST_TOP20,
         lr=0.02,
         batch_size=128,
-        epochs=60
+        epochs=25
     )
     ##################################################
 
@@ -111,14 +111,19 @@ if __name__ == '__main__':
     shutil.move("models/lstm_" + local_short_transform + ".h5", record_test.get_dir())
 
 
+    logger.info('================ start short training  ===============')
     record_server_short = variant_short.run(keep_record=True)
     shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
 
+    logger.info('================ start medium training  ===============')
     record_server_medium = variant_medium.run(keep_record=True)
     shutil.move("models/lstm_" + ds_transform_server_medium + ".h5", record_server_medium.get_dir())
 
+    logger.info('================ start long training  ===============')
     record_server_long = variant_long.run(keep_record=True)
     shutil.move("models/lstm_" + ds_transform_server_long + ".h5", record_server_long.get_dir())
+
+    # TODO run same predictions but based on one hour resample, i.e. 60min
 
 
     logger.info(">>>>>>>>>>>>>> ::: COMPLETED ::: <<<<<<<<<<<<<< ")

@@ -28,7 +28,7 @@ def f1_scores(y_true, y_predicted):
     tp = ((y_true * y_predicted).sum(axis=0)).astype(int)
     fp = (y_predicted.sum(axis=0) - tp).astype(int)
     fn = (y_true.sum(axis=0) - tp).astype(int)
-    print("    tp = %s, fp = %s, fn = %s" % (str(tp), str(fp),str(fn)))
+    print("             tp = %s, fp = %s, fn = %s" % (str(tp), str(fp),str(fn)))
 
     precision = tp/(tp+fp)
     recall = tp/(tp+fn)  # how accurate we predict every positives ( fn - those who shall be predicted but they are not
@@ -128,11 +128,11 @@ def rnn_train_basic(
         Y_train,
         batch_size=batch_size,
         epochs=epochs,
-        validation_split=0.1,
+        validation_split=0.15,
         callbacks=[metrics],
         verbose = 2,         # 0 = silent, 1 = progress bar, 2 = one line per epoch
         shuffle=True,
-        class_weight={0:1., 1:10., 2:10.}
+        class_weight={0:1., 1:12., 2:12.} # we have unbalanced classes: SAME is always mode then up and down
     )
 
     model.save("models/lstm_" + ds_transform + ".h5")
@@ -156,7 +156,7 @@ def rnn_train_basic(
 
     ### plot colored prediction on train data
     # get
-    point=2500
+    point=1500
     logger.info(">>>>>>>>>>  PREDICTING and PLOTTING on validation dataset (BTC)")
     start = time.time()
     y_predicted_valid = model.predict(X_valid)
