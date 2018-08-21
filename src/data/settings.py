@@ -56,12 +56,12 @@ DATASET_TRANSFORM = {
                                                      label_func='label_3class_return_target', num_classes=3, return_target=0.04),
 
 
-    'medium_60m_192_24_3class_return_0.1': DatasetType(res_period='60min', win_size=192, stride=1, future=24,
-                                                    label_func='label_3class_return_target', num_classes=3, return_target=0.1),
+    'medium_60m_192_24_3class_return_0.08': DatasetType(res_period='60min', win_size=192, stride=1, future=24,
+                                                    label_func='label_3class_return_target', num_classes=3, return_target=0.08),
 
-    'long_60m_576_72_3class_return_0.2': DatasetType(res_period='60min', win_size=576, stride=1, future=72,
+    'long_60m_576_72_3class_return_0.1': DatasetType(res_period='60min', win_size=576, stride=1, future=72,
                                                        label_func='label_3class_return_target', num_classes=3,
-                                                       return_target=0.2),
+                                                       return_target=0.1),
 
 }
 

@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     ################## MEDIUM server variant  ###################
     ##  another transformation, less dropout
-    ds_transform_server_medium = 'medium_60m_192_24_3class_return_0.1'
+    ds_transform_server_medium = 'medium_60m_192_24_3class_return_0.08'
     lstm_layers_server_medium = [
         {'layer': 'input', 'units': 128, 'dropout': 0.01},
         {'layer': 'l2', 'units': 64, 'dropout': 0.01},
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     ################## LONG server variant  ###################
     ##  another transformation, less dropout
-    ds_transform_server_long = 'long_60m_576_72_3class_return_0.2'
+    ds_transform_server_long = 'long_60m_576_72_3class_return_0.1'
     lstm_layers_server_long = [
         {'layer': 'input', 'units': 128, 'dropout': 0.01},
         {'layer': 'l2', 'units': 64, 'dropout': 0.01},
