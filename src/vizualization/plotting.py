@@ -5,14 +5,23 @@ import numpy as np
 np.set_printoptions(precision=3)
 
 
-def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, y_true): # , y_true
+def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, y_true, ds_transform): # , y_true
     start_of_train_position = point
     position_on_plot = point + win_size
     end_of_future_position = point + win_size + future
 
-    # color each dor according to prediction: if UP-> green, if DOWN->red
+    # color each dot according to prediction: if UP-> green, if DOWN->red
     # for PREDICTED
+    # skip first win_size prices, since we dont have prediction for them
+
     col3 = []
+    col3_true = []
+    # skip first win_size prices, since we dont have prediction for them
+    for i in range(0,win_size):
+        col3.append('yellow')
+        col3_true.append('yellow')
+
+    # now color according to prediction
     for p in y_predicted:
         idx = np.argmax(p)
         if idx == 1:
@@ -23,7 +32,7 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, 
             color = 'black'
         col3.append(color)
 
-    col3_true = []
+
     for p in y_true:
         idx = np.argmax(p)
         if idx == 1:
@@ -35,18 +44,21 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, 
         col3_true.append(color)
 
     fig, [ax1, ax2] = plt.subplots(nrows=2, ncols=1, figsize=(16, 10))
-    ax2.scatter(range(price.shape[0]), price, c=col3_true, s=1)
+    ax2.scatter(range(price.shape[0]), price, c=col3_true, s=7)
     ax2.set_title(" TRUE LABELS ")
 
-    ax1.scatter(range(price.shape[0]), price, c=col3, s=1)
     ax1.set_title(" predicted Labels ")
+    ax1.scatter(range(price.shape[0]), price, c=col3, s=7, label=['yellow - not predicted, black - SAME', 'green - UP, red - DOWN'])
+    ax1.legend()
+
+
 
     ax1.axvline(start_of_train_position, color='blue')
     ax1.axvline(position_on_plot, color=col3[position_on_plot], lw=1)
 
     ax1.axvline(end_of_future_position, color=col3[position_on_plot], lw=1)
 
-    plt.show(block=False)
+    plt.show(block=True)
 
 
 def plot_model_results(results):
@@ -59,6 +71,7 @@ def plot_model_results(results):
     final_val_scores = results[4]
 
     print("===== Data Transformation ======")
+    print(plot_kvargs['ds_transform'])
 
     print("===== Model summary:")
     for layer in model_config_dict:

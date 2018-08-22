@@ -116,6 +116,13 @@ def rnn_train_basic(
     logger.info(">>>>>>>>>>>>>> Build a TRAINING data set ")
     X_train, Y_train = get_dataset_manycoins_fused(COINS_LIST=train_coin_list, db_name=db_name, ds_transform=ds_transform)
 
+    # balance classes if neccesary
+    logger.info(" BALANCING: before Y: same= " + str(sum(Y_train[:, 0])) + ' | UP= ' + str(sum(Y_train[:, 1])) + ' | DOWN= ' + str(sum(Y_train[:, 2])))
+    balancing_weight = {}
+    for cl in range(Y_train.shape[1]):
+        balancing_weight[cl] = 1/ (sum(Y_train[:, cl]) / sum(sum(Y_train[:, :])))
+    logger.info(" balancing weights = %s" % str(balancing_weight) )
+
     # build a model
     model = build_lstm_model(win_size, data_dim, num_classes, lstm_layers, lr)
 
@@ -132,7 +139,7 @@ def rnn_train_basic(
         callbacks=[metrics],
         verbose = 2,         # 0 = silent, 1 = progress bar, 2 = one line per epoch
         shuffle=True,
-        class_weight={0:1., 1:20., 2:20.} # we have unbalanced classes: SAME is always mode then up and down
+        class_weight=balancing_weight
     )
 
     model.save("models/lstm_" + ds_transform + ".h5")
@@ -156,7 +163,7 @@ def rnn_train_basic(
 
     ### plot colored prediction on train data
     # get
-    point=1500
+    point=100
     logger.info(">>>>>>>>>>  PREDICTING and PLOTTING on validation dataset (BTC)")
     start = time.time()
     y_predicted_valid = model.predict(X_valid)
@@ -173,7 +180,8 @@ def rnn_train_basic(
         'point': point,
         'win_size': win_size,
         'future': future,
-        'y_true': Y_valid
+        'y_true': Y_valid,
+        'ds_transform': ds_transform
     }
 
 

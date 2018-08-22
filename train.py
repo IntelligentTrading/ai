@@ -57,15 +57,15 @@ if __name__ == '__main__':
         ds_transform=ds_transform_server_short,
         lstm_layers=lstm_layers_server_short,
         train_coin_list=TRAIN_COINS_LIST_TOP20,
-        lr=0.02,
-        batch_size=128,
-        epochs=20
+        lr=0.01,
+        batch_size=64,
+        epochs=30
     )
     ##################################################
 
     ################## MEDIUM server variant  ###################
     ##  another transformation, less dropout
-    ds_transform_server_medium = 'medium_60m_192_24_3class_return_0.08'
+    ds_transform_server_medium = 'medium_240m_28_6_3class_return_0.05'
     lstm_layers_server_medium = [
         {'layer': 'input', 'units': 128, 'dropout': 0.01},
         {'layer': 'l2', 'units': 64, 'dropout': 0.01},
@@ -78,15 +78,15 @@ if __name__ == '__main__':
         ds_transform=ds_transform_server_medium,
         lstm_layers=lstm_layers_server_medium,
         train_coin_list=TRAIN_COINS_LIST_TOP20,
-        lr=0.02,
-        batch_size=128,
-        epochs=8
+        lr=0.01,
+        batch_size=512,
+        epochs=50
     )
     ##################################################
 
     ################## LONG server variant  ###################
     ##  another transformation, less dropout
-    ds_transform_server_long = 'long_60m_576_72_3class_return_0.1'
+    ds_transform_server_long = 'long_1440m_28_5_3class_return_0.10'
     lstm_layers_server_long = [
         {'layer': 'input', 'units': 128, 'dropout': 0.01},
         {'layer': 'l2', 'units': 64, 'dropout': 0.01},
@@ -99,9 +99,9 @@ if __name__ == '__main__':
         ds_transform=ds_transform_server_long,
         lstm_layers=lstm_layers_server_long,
         train_coin_list=TRAIN_COINS_LIST_TOP20,
-        lr=0.02,
-        batch_size=128,
-        epochs=8
+        lr=0.01,
+        batch_size=512,
+        epochs=70
     )
     ##################################################
 
@@ -111,9 +111,9 @@ if __name__ == '__main__':
     # shutil.move("models/lstm_" + local_short_transform + ".h5", record_test.get_dir())
     #
     #
-    # logger.info('================ start short training  ===============')
-    # record_server_short = variant_short.run(keep_record=True)
-    # shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
+    logger.info('================ start short training  ===============')
+    record_server_short = variant_short.run(keep_record=True)
+    shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
 
     logger.info('================ start medium training  ===============')
     record_server_medium = variant_medium.run(keep_record=True)

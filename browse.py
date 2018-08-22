@@ -15,6 +15,10 @@ if __name__ == '__main__':
     rnn_train_basic.add_variant(variant_name='test')
     rnn_train_basic.add_variant(variant_name='local_short')
 
+    rnn_train_basic.add_variant(variant_name='server_short')
+    rnn_train_basic.add_variant(variant_name='server_medium')
+    rnn_train_basic.add_variant(variant_name='server_long')
+
     rnn_train_basic.browse()
 
 

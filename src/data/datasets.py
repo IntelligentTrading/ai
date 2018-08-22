@@ -57,9 +57,9 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
 
         # get price for the prediction period and calculate its moments
         #prices = data_set[start_example, :, 0]
-        future_prices = data_df[end_example:end_example + future]['price']
+        future_prices = data_df[end_example-1 : end_example + future]['price'] # we also nee the last price from example
 
-        #build X array
+        #build Y array (labels)
         module = importlib.import_module('src.data.datasets')
         func_obj = getattr(module, label_func)
 
@@ -88,7 +88,7 @@ def label_3class_return_target(future_prices, return_target):
 
     label = 0 if (abs(percentage_return) < return_target) else np.sign(percentage_return)
 
-    dummy_labels = np.zeros([1,label_dummy_classes])
+    dummy_labels = np.zeros([1,label_dummy_classes]).astype(int)
 
     # 0 - same / 1 - up / 2 - down
     if label == 0:
