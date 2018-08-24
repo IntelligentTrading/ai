@@ -1,14 +1,18 @@
 __author__ = 'AlexBioY'
 import matplotlib.pyplot as plt
 import numpy as np
+from src.data.settings import DATASET_TRANSFORM
 
 np.set_printoptions(precision=3)
 
 
-def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, y_true, ds_transform): # , y_true
+def plot_class_colored_prediction(model_summary_str, final_val_scores, price, y_predicted, point, win_size, future, y_true, ds_transform): # , y_true
     start_of_train_position = point
     position_on_plot = point + win_size
     end_of_future_position = point + win_size + future
+
+    num_classes = DATASET_TRANSFORM[ds_transform].num_classes
+
 
     # color each dot according to prediction: if UP-> green, if DOWN->red
     # for PREDICTED
@@ -23,7 +27,7 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, 
 
     # now color according to prediction
     for p in y_predicted:
-        idx = np.argmax(p)
+        idx = np.argmax(p) - (num_classes-3)
         if idx == 1:
             color = 'green'
         elif idx == 2:
@@ -34,7 +38,7 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, 
 
 
     for p in y_true:
-        idx = np.argmax(p)
+        idx = np.argmax(p) - (num_classes-3)
         if idx == 1:
             color = 'green'
         elif idx == 2:
@@ -43,20 +47,21 @@ def plot_3class_colored_prediction(price, y_predicted, point, win_size, future, 
             color = 'black'
         col3_true.append(color)
 
-    fig, [ax1, ax2] = plt.subplots(nrows=2, ncols=1, figsize=(16, 10))
+    fig, [ax1, ax2] = plt.subplots(nrows=2, ncols=1, figsize=(16, 8))
+
+    plt.figtext(0.6, 0.65, "DATA: " + ds_transform + "\n" + model_summary_str )
+
     ax2.scatter(range(price.shape[0]), price, c=col3_true, s=7)
-    ax2.set_title(" TRUE LABELS ")
+    ax2.set_title(" TRUE LABELS")
 
-    ax1.set_title(" predicted Labels ")
-    ax1.scatter(range(price.shape[0]), price, c=col3, s=7, label=['yellow - not predicted, black - SAME', 'green - UP, red - DOWN'])
-    ax1.legend()
-
-
+    ax1.set_title(" Predicted: [SAME, UP, DOWN]::   F1: %s,  PRECISION: %s,  RECALL: %s" % (str(final_val_scores['f1']), str(final_val_scores['precision']), str(final_val_scores['recall'])))
+    ax1.scatter(range(price.shape[0]), price, c=col3, s=7)
 
     ax1.axvline(start_of_train_position, color='blue')
     ax1.axvline(position_on_plot, color=col3[position_on_plot], lw=1)
 
     ax1.axvline(end_of_future_position, color=col3[position_on_plot], lw=1)
+
 
     plt.show(block=True)
 
@@ -74,15 +79,17 @@ def plot_model_results(results):
     print(plot_kvargs['ds_transform'])
 
     print("===== Model summary:")
+    model_summary_str = "MODEL: \n"
     for layer in model_config_dict:
-        print(
-            str(layer['class_name']) + '= units:' + str(layer['config']['units']) +
-              ', activation: ' + str(layer['config']['activation'] +
-              ', dropout: '
-         ))
+        model_summary_str = model_summary_str  + \
+                            str(layer['class_name']) + ' >> units: ' + str(layer['config']['units']) + \
+                            ',  activation: ' +  str(layer['config']['activation']) + \
+                            ',  dropout: ' +  str(layer['config']['dropout'] if 'dropout' in layer['config'] else 'NA') + "\n"
+
+    print(model_summary_str)
 
     print("======= Training progress of loss and accuracy (based on keras):")
-    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 8))
+    fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(9, 5))
     axes[0, 0].set_title('train loss')
     axes[0, 0].plot(history['loss'])
 
@@ -94,6 +101,12 @@ def plot_model_results(results):
 
     axes[1, 1].set_title('Validation Accuracy')
     axes[1, 1].plot(history['val_acc'], c='orange')
+
+    axes[0, 2].set_title('BTC Validation Precision')
+    axes[0, 2].plot(train_val_scores['precision'])
+
+    axes[1, 2].set_title('BTC Validation Recall')
+    axes[1, 2].plot(train_val_scores['recall'])
 
     plt.show(block=False) # block=False
 
@@ -109,4 +122,4 @@ def plot_model_results(results):
     print('  F1: %s ||  PRECISION: %s  ||  RECALL: %s' %
           (str(final_val_scores['f1']), str(final_val_scores['precision']), str(final_val_scores['recall'])))
 
-    plot_3class_colored_prediction(**plot_kvargs)
+    plot_class_colored_prediction(model_summary_str, final_val_scores, **plot_kvargs)

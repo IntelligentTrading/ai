@@ -32,6 +32,8 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
     Labels can be set to a different
     '''
     n = len(data_df)
+    if (n - win_size) < 0:
+        logger.error("   DATASET is smaller then win_size! we need more data")
     num_examples = int((n - win_size) / stride) # how many times we can srtide via the timeseries (number of possible examples)
 
     # (4968, 96, 1)
@@ -78,7 +80,7 @@ def label_3class_return_target(future_prices, return_target):
     '''
     calculate a dummy class number out of 90 future prices as 0 - same / 1 - up / 2 - down
     '''
-    # 0 -same, 1-up, -1 -down
+    # 0 -same, 1-up, 2 -down
     label_dummy_classes=3
 
     open_price = future_prices[0]
@@ -114,7 +116,7 @@ def label_2class_return_target(future_prices, return_target):
 
     label = np.sign(percentage_return)
 
-    dummy_labels = np.zeros([1, label_dummy_classes])
+    dummy_labels = np.zeros([1, label_dummy_classes]).astype(int)
 
     # 0 - same / 1 - up / 2 - down
     if label == 1:
@@ -178,7 +180,12 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, ds_transform):
     X = np.delete(X, (idx2delete), axis=0)
     Y = np.delete(Y, (idx2delete), axis=0)
 
-    logger.info("> X,Y Datasets have been built: same= " + str(sum(Y[:,0])) + ' | UP= ' + str(sum(Y[:,1])) + ' | DOWN= ' + str(sum(Y[:,2])))
+    if DATASET_TRANSFORM[ds_transform].num_classes == 3:
+        logger.info("> X,Y Datasets have been built: same= " + str(sum(Y[:,0])) + ' | UP= ' + str(sum(Y[:,1])) + ' | DOWN= ' + str(sum(Y[:,2])))
+    elif DATASET_TRANSFORM[ds_transform].num_classes == 2:
+        logger.info("> X,Y Datasets have been built: UP= " + str(sum(Y[:, 0])) + ' | DOWN= ' + str( sum(Y[:, 1])) )
+    else:
+        logger.error("UNKNOWN NUMBER OF CLASSES!")
 
     # normalize
     # TODO: can I do it in-place?

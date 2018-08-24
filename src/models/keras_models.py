@@ -8,10 +8,10 @@ from keras.optimizers import Adam, adagrad
 from keras import backend as K
 from keras.callbacks import Callback
 
-from src.vizualization.plotting import plot_model_results, plot_3class_colored_prediction
+from src.vizualization.plotting import plot_model_results, plot_class_colored_prediction
 from src.data.data_sources import get_combined_cleaned_onecoin_df
 from src.data.datasets import get_dataset_manycoins_fused, one_coin_array_from_df
-from src.data.settings import DATASET_TRANSFORM
+from src.data.settings import DATASET_TRANSFORM, TRAIN_COINS_LIST_TOP20
 
 from artemis.experiments import ExperimentFunction
 
@@ -28,7 +28,8 @@ def f1_scores(y_true, y_predicted):
     tp = ((y_true * y_predicted).sum(axis=0)).astype(int)
     fp = (y_predicted.sum(axis=0) - tp).astype(int)
     fn = (y_true.sum(axis=0) - tp).astype(int)
-    print("             tp = %s, fp = %s, fn = %s" % (str(tp), str(fp),str(fn)))
+    #tn =
+    print("                   tp = %s,      fp = %s,     fn = %s" % (str(tp), str(fp),str(fn)))
 
     precision = tp/(tp+fp)
     recall = tp/(tp+fn)  # how accurate we predict every positives ( fn - those who shall be predicted but they are not
@@ -96,7 +97,7 @@ def build_lstm_model(win_size_timesteps, data_dim,num_classes, layers_dict, lr):
 
 @ExperimentFunction(display_function=display_train_result,  is_root=True)
 def rnn_train_basic(
-        train_coin_list=[('BTC', 2), ('ETH', 0), ('LTC',2), ('XRP', 0)],
+        train_coin_list=TRAIN_COINS_LIST_TOP20,
         ds_transform='basic_10m_288_24_3class_return0.01',
         lstm_layers=[],
         lr=0.0008,
@@ -117,10 +118,15 @@ def rnn_train_basic(
     X_train, Y_train = get_dataset_manycoins_fused(COINS_LIST=train_coin_list, db_name=db_name, ds_transform=ds_transform)
 
     # balance classes if neccesary
-    logger.info(" BALANCING: before Y: same= " + str(sum(Y_train[:, 0])) + ' | UP= ' + str(sum(Y_train[:, 1])) + ' | DOWN= ' + str(sum(Y_train[:, 2])))
+    logger.info(" BALANCING: ")
+    for cl in range(Y_train.shape[1]):
+        logger.info(" class %s = %s" % (cl, sum(Y_train[:, cl])))
+
     balancing_weight = {}
     for cl in range(Y_train.shape[1]):
         balancing_weight[cl] = 1/ (sum(Y_train[:, cl]) / sum(sum(Y_train[:, :])))
+
+    balancing_weight = {k: v / min([balancing_weight.values()][0]) for k, v in balancing_weight.items()} # normalize to one
     logger.info(" balancing weights = %s" % str(balancing_weight) )
 
     # build a model
@@ -135,7 +141,7 @@ def rnn_train_basic(
         Y_train,
         batch_size=batch_size,
         epochs=epochs,
-        validation_split=0.15,
+        validation_split=0.18,
         callbacks=[metrics],
         verbose = 2,         # 0 = silent, 1 = progress bar, 2 = one line per epoch
         shuffle=True,
@@ -163,7 +169,7 @@ def rnn_train_basic(
 
     ### plot colored prediction on train data
     # get
-    point=100
+    point=0
     logger.info(">>>>>>>>>>  PREDICTING and PLOTTING on validation dataset (BTC)")
     start = time.time()
     y_predicted_valid = model.predict(X_valid)

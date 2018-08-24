@@ -37,19 +37,23 @@ DATASET_TRANSFORM = {
     'basic_10m_288_24_3class_return0.01': DatasetType(res_period='10min', win_size=288, stride=1, future=24, label_func='label_3class_return_target', num_classes=3, return_target=0.01),
 
 
-    # final
+    # 3 classes:
 
-    'short_60m_96_8_3class_return_0.04': DatasetType(res_period='60min', win_size=96, stride=1, future=8,
+    'short_60m_150_16_3class_return_0.06': DatasetType(res_period='60min', win_size=150, stride=1, future=16,
                                                      label_func='label_3class_return_target', num_classes=3,
-                                                     return_target=0.04),
+                                                     return_target=0.06),
 
-    'medium_240m_28_6_3class_return_0.05': DatasetType(res_period='240min', win_size=28, stride=1, future=6,
-                                                       label_func='label_3class_return_target', num_classes=3, return_target=0.05),
+    'medium_240m_100_20_3class_return_0.1': DatasetType(res_period='240min', win_size=100, stride=1, future=20,
+                                                       label_func='label_3class_return_target', num_classes=3, return_target=0.08),
 
 
-    'long_1440m_28_5_3class_return_0.10': DatasetType(res_period='1440min', win_size=28, stride=1, future=5,
+    'long_1440m_28_10_class3_return_0.1': DatasetType(res_period='1440min', win_size=28, stride=1, future=10,
                                                        label_func='label_3class_return_target', num_classes=3,
                                                        return_target=0.1),
 
+    # 2 classes
+    'long_1440m_28_4_class2': DatasetType(res_period='1440min', win_size=28, stride=1, future=4,
+                                                       label_func='label_2class_return_target', num_classes=2,
+                                                       return_target=0.1), # return_target does not play role here
 }
 
