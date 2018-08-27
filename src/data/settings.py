@@ -38,10 +38,15 @@ DATASET_TRANSFORM = {
 
 
     # 3 classes:
-
-    'short_60m_150_16_3class_return_0.06': DatasetType(res_period='60min', win_size=150, stride=1, future=16,
+    'short_60m_150_8_3class_return_0.03': DatasetType(res_period='60min', win_size=150, stride=1, future=8,
                                                      label_func='label_3class_return_target', num_classes=3,
-                                                     return_target=0.06),
+                                                     return_target=0.03),
+
+    'short_60m_160_8_3class_return_0.03': DatasetType(res_period='60min', win_size=160, stride=1, future=8,
+                                                     label_func='label_3class_return_target', num_classes=3,
+                                                     return_target=0.03),
+
+
 
     'medium_240m_100_20_3class_return_0.1': DatasetType(res_period='240min', win_size=100, stride=1, future=20,
                                                        label_func='label_3class_return_target', num_classes=3, return_target=0.08),

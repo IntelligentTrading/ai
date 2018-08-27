@@ -44,14 +44,14 @@ if __name__ == '__main__':
 
     ################## SHORT server variant  ###################
     ##  another transformation, less dropout
-    ds_transform_server_short = 'short_60m_150_16_3class_return_0.06'
+    ds_transform_server_short = 'short_60m_160_8_3class_return_0.03'
     lstm_layers_server_short = [
         {'layer': 'input', 'units': 256, 'dropout': 0.01},
         {'layer': 'l2', 'units': 128, 'dropout': 0.01},
         {'layer': 'l3', 'units': 64, 'dropout': 0.01},
-        {'layer': 'l4', 'units': 64, 'dropout': 0.05},
-        {'layer': 'l5', 'units': 64, 'dropout': 0.05},
-        {'layer': 'l6', 'units': 64, 'dropout': 0.05},
+        {'layer': 'l4', 'units': 64, 'dropout': 0.01},
+        {'layer': 'l5', 'units': 64, 'dropout': 0.01},
+        {'layer': 'l6', 'units': 64, 'dropout': 0.01},
         {'layer': 'last', 'units': 32, 'dropout': 0.01}
     ]
     variant_short = rnn_train_basic.add_variant(
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         lstm_layers=lstm_layers_server_short,
         lr=0.001,
         batch_size=512,
-        epochs=10
+        epochs=3
     )
     ##################################################
 
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     ##################################################
 
 
-    ################## LONG server variant - 2 class  ###################
+    ################## 2 classЖ LONG server variant -  ###################
     ds_transform_server_long_2cl = 'long_1440m_28_4_class2'
     lstm_layers_server_long = [
         {'layer': 'input', 'units': 128, 'dropout': 0.01},
@@ -134,9 +134,9 @@ if __name__ == '__main__':
     #
 
 
-    logger.info('================ start long - 2 class training  ===============')
-    record_server_long_2cl = variant_long_2class.run(keep_record=True)
-    shutil.move("models/lstm_" + ds_transform_server_long_2cl + ".h5", record_server_long_2cl.get_dir())
+    # logger.info('================ start long - 2 class training  ===============')
+    # record_server_long_2cl = variant_long_2class.run(keep_record=True)
+    # shutil.move("models/lstm_" + ds_transform_server_long_2cl + ".h5", record_server_long_2cl.get_dir())
 
     # logger.info('================ start long training  ===============')
     # record_server_long = variant_long.run(keep_record=True)
@@ -149,9 +149,9 @@ if __name__ == '__main__':
     #
     #
     #
-    # logger.info('================ start short training  ===============')
-    # record_server_short = variant_short.run(keep_record=True)
-    # shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
+    logger.info('================ start short training  ===============')
+    record_server_short = variant_short.run(keep_record=True)
+    shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
 
 
 
