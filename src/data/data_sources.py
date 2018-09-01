@@ -141,8 +141,13 @@ def get_combined_cleaned_onecoin_df(db_name, transaction_coin, counter_coin, res
 
     # add variance, resample (for smoothing)
     data_df = raw_data_frame.resample(rule=res_period).mean()  # todo: max?
+    data_df['price_max'] = raw_data_frame['price'].resample(rule=res_period).max()
+    data_df['price_min'] = raw_data_frame['price'].resample(rule=res_period).min()
+
+    data_df['price_var'] = raw_data_frame['price'].resample(rule=res_period).var()
     data_df['price_var'] = raw_data_frame['price'].resample(rule=res_period).var()
     data_df['volume_var'] = raw_data_frame['volume'].resample(rule=res_period).var()
+
     data_df = data_df.interpolate()
 
     del raw_price_ts, raw_volume_ts, raw_data_frame

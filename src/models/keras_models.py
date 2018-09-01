@@ -10,7 +10,7 @@ from keras.callbacks import Callback
 
 from src.vizualization.plotting import plot_model_results, plot_class_colored_prediction
 from src.data.data_sources import get_combined_cleaned_onecoin_df
-from src.data.datasets import get_dataset_manycoins_fused, one_coin_array_from_df
+from src.data.datasets import combine_all_coins, df_to_X_onecoin
 from src.data.settings import DATASET_TRANSFORM, TRAIN_COINS_LIST_TOP20
 
 from artemis.experiments import ExperimentFunction
@@ -105,7 +105,6 @@ def rnn_train_basic(
         epochs = 3):
 
     # TODO get data_dim and num_classes from 'label_3class_return_target'
-    data_dim = 4  # price, price_var, volume, volume_var
     win_size = DATASET_TRANSFORM[ds_transform].win_size
     num_classes = DATASET_TRANSFORM[ds_transform].num_classes
     res_period = DATASET_TRANSFORM[ds_transform].res_period
@@ -115,12 +114,13 @@ def rnn_train_basic(
     # build a dataset for training
     db_name = 'postgre_stage'   # 'prodcopy',
     logger.info(">>>>>>>>>>>>>> Build a TRAINING data set ")
-    X_train, Y_train = get_dataset_manycoins_fused(COINS_LIST=train_coin_list, db_name=db_name, ds_transform=ds_transform)
+    X_train, Y_train = combine_all_coins(COINS_LIST=train_coin_list, db_name=db_name, ds_transform=ds_transform)
+    data_dim = X_train.shape[2]  # price, price_var, volume, volume_var, price_max, price_min
 
     # balance classes if neccesary
     logger.info(" BALANCING: ")
     for cl in range(Y_train.shape[1]):
-        logger.info(" class %s = %s" % (cl, sum(Y_train[:, cl])))
+        logger.info(" class %s members = %s" % (cl, sum(Y_train[:, cl])))
 
     balancing_weight = {}
     for cl in range(Y_train.shape[1]):
@@ -141,7 +141,7 @@ def rnn_train_basic(
         Y_train,
         batch_size=batch_size,
         epochs=epochs,
-        validation_split=0.18,
+        validation_split=0.15,
         callbacks=[metrics],
         verbose = 2,         # 0 = silent, 1 = progress bar, 2 = one line per epoch
         shuffle=True,
@@ -165,7 +165,7 @@ def rnn_train_basic(
 
     # get validation dataset for futher metrics
     logger.info("   :: build X,Y for validation dataset:")
-    X_valid, Y_valid = get_dataset_manycoins_fused([(VALID_COIN,VALID_COUNTER)], db_name, ds_transform=ds_transform)
+    X_valid, Y_valid = combine_all_coins([(VALID_COIN, VALID_COUNTER)], db_name, ds_transform=ds_transform)
 
     ### plot colored prediction on train data
     # get

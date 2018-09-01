@@ -50,8 +50,6 @@ if __name__ == '__main__':
         {'layer': 'l2', 'units': 128, 'dropout': 0.01},
         {'layer': 'l3', 'units': 64, 'dropout': 0.01},
         {'layer': 'l4', 'units': 64, 'dropout': 0.01},
-        {'layer': 'l5', 'units': 64, 'dropout': 0.01},
-        {'layer': 'l6', 'units': 64, 'dropout': 0.01},
         {'layer': 'last', 'units': 32, 'dropout': 0.01}
     ]
     variant_short = rnn_train_basic.add_variant(
@@ -59,21 +57,19 @@ if __name__ == '__main__':
         ds_transform=ds_transform_server_short,
         lstm_layers=lstm_layers_server_short,
         lr=0.001,
-        batch_size=512,
-        epochs=3
+        batch_size=256,
+        epochs=10
     )
     ##################################################
 
     ################## MEDIUM server variant  ###################
     ##  another transformation, less dropout
-    ds_transform_server_medium = 'medium_240m_100_20_3class_return_0.1'
+    ds_transform_server_medium = 'medium_240m_100_12_3class_return_0.08'
     lstm_layers_server_medium = [
         {'layer': 'input', 'units': 128, 'dropout': 0.01},
-        {'layer': 'l2', 'units': 256, 'dropout': 0.01},
-        {'layer': 'l3', 'units': 256, 'dropout': 0.01},
-        {'layer': 'l4', 'units': 128, 'dropout': 0.05},
-        {'layer': 'l5', 'units': 64, 'dropout': 0.05},
-        {'layer': 'l6', 'units': 64, 'dropout': 0.05},
+        {'layer': 'l2', 'units': 64, 'dropout': 0.01},
+        {'layer': 'l3', 'units': 64, 'dropout': 0.01},
+        {'layer': 'l4', 'units': 32, 'dropout': 0.01},
         {'layer': 'last', 'units': 32, 'dropout': 0.01}
     ]
     variant_medium = rnn_train_basic.add_variant(
@@ -81,19 +77,19 @@ if __name__ == '__main__':
         ds_transform=ds_transform_server_medium,
         lstm_layers=lstm_layers_server_medium,
         lr=0.001,
-        batch_size=512,
-        epochs=10
+        batch_size=256,
+        epochs=9
     )
     ##################################################
 
     ################## LONG server variant  ###################
-    ds_transform_server_long = 'long_1440m_28_10_class3_return_0.1'
+    ds_transform_server_long = 'long_1440m_28_7_class3_return_0.11'
     lstm_layers_server_long = [
         {'layer': 'input', 'units': 128, 'dropout': 0.01},
-        {'layer': 'l2', 'units': 256, 'dropout': 0.1},
-        {'layer': 'l3', 'units': 256, 'dropout': 0.01},
-        {'layer': 'l4', 'units': 128, 'dropout': 0.01},
-        {'layer': 'last', 'units': 64, 'dropout': 0.01}
+        {'layer': 'l2', 'units': 64, 'dropout': 0.01},
+        {'layer': 'l3', 'units': 64, 'dropout': 0.01},
+        {'layer': 'l4', 'units': 64, 'dropout': 0.01},
+        {'layer': 'last', 'units': 32, 'dropout': 0.01}
     ]
 
     variant_long = rnn_train_basic.add_variant(
@@ -101,8 +97,8 @@ if __name__ == '__main__':
         ds_transform=ds_transform_server_long,
         lstm_layers=lstm_layers_server_long,
         lr=0.0008,
-        batch_size=7000,
-        epochs=5
+        batch_size=512,
+        epochs=20
     )
     ##################################################
 
@@ -126,8 +122,31 @@ if __name__ == '__main__':
         epochs=9
     )
     ##################################################
+    ##################################################
 
 
+    ################## MAX HIT variant -  ###################
+    ds_transform_max_03_06 = 'short_60m_160_8_3_maxhit_0.03_06'
+    lstm_layers_maxhit = [
+        {'layer': 'input', 'units': 128, 'dropout': 0.01},
+        {'layer': 'l2', 'units': 256, 'dropout': 0.01},
+        {'layer': 'l3', 'units': 256, 'dropout': 0.01},
+        {'layer': 'l4', 'units': 128, 'dropout': 0.01},
+        {'layer': 'last', 'units': 64, 'dropout': 0.01}
+    ]
+
+    variant_maxhit = rnn_train_basic.add_variant(
+        variant_name='max_hit',  # comes from a decorator
+        ds_transform=ds_transform_max_03_06,
+        lstm_layers=lstm_layers_maxhit,
+        lr=0.0008,
+        batch_size=512,
+        epochs=1
+    )
+    ##################################################
+
+
+    ###################################################
     ############### RUN variants ######################
     # record_test = variant_local_short.run(keep_record=True, display_results=True)
     # shutil.move("models/lstm_" + local_short_transform + ".h5", record_test.get_dir())
@@ -138,6 +157,8 @@ if __name__ == '__main__':
     # record_server_long_2cl = variant_long_2class.run(keep_record=True)
     # shutil.move("models/lstm_" + ds_transform_server_long_2cl + ".h5", record_server_long_2cl.get_dir())
 
+
+
     # logger.info('================ start long training  ===============')
     # record_server_long = variant_long.run(keep_record=True)
     # shutil.move("models/lstm_" + ds_transform_server_long + ".h5", record_server_long.get_dir())
@@ -146,12 +167,15 @@ if __name__ == '__main__':
     # logger.info('================ start medium training  ===============')
     # record_server_medium = variant_medium.run(keep_record=True)
     # shutil.move("models/lstm_" + ds_transform_server_medium + ".h5", record_server_medium.get_dir())
-    #
-    #
-    #
-    logger.info('================ start short training  ===============')
-    record_server_short = variant_short.run(keep_record=True)
-    shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
+
+
+    # logger.info('================ start short training  ===============')
+    # record_server_short = variant_short.run(keep_record=True)
+    # shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
+
+    ################  MAX MIN net ###################
+    record_maxhit = variant_maxhit.run(keep_record=True)
+    shutil.move("models/lstm_" + ds_transform_max_03_06 + ".h5", record_maxhit.get_dir())
 
 
 

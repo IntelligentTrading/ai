@@ -31,34 +31,46 @@ TRAIN_COINS_LIST_BOTTOM15 = []
 
 
 #########  Parameters to process raw time series
-DatasetType = namedtuple('DatasetType', 'res_period win_size stride future label_func num_classes  return_target')
+DatasetType = namedtuple('DatasetType', 'res_period win_size stride future label_func num_classes  return_target threshold_1 threshold_2')
 
 DATASET_TRANSFORM = {
-    'basic_10m_288_24_3class_return0.01': DatasetType(res_period='10min', win_size=288, stride=1, future=24, label_func='label_3class_return_target', num_classes=3, return_target=0.01),
+    'basic_10m_288_24_3class_return0.01': DatasetType(res_period='10min', win_size=288, stride=1, future=24,
+                                                      label_func='label_3class_return_target', num_classes=3, return_target=0.01, threshold_1=None, threshold_2=None),
 
 
     # 3 classes:
     'short_60m_150_8_3class_return_0.03': DatasetType(res_period='60min', win_size=150, stride=1, future=8,
                                                      label_func='label_3class_return_target', num_classes=3,
-                                                     return_target=0.03),
+                                                     return_target=0.03, threshold_1=None, threshold_2=None),
 
     'short_60m_160_8_3class_return_0.03': DatasetType(res_period='60min', win_size=160, stride=1, future=8,
                                                      label_func='label_3class_return_target', num_classes=3,
-                                                     return_target=0.03),
+                                                     return_target=0.03, threshold_1=None, threshold_2=None),
 
 
 
-    'medium_240m_100_20_3class_return_0.1': DatasetType(res_period='240min', win_size=100, stride=1, future=20,
-                                                       label_func='label_3class_return_target', num_classes=3, return_target=0.08),
+
+    'medium_240m_100_12_3class_return_0.08': DatasetType(res_period='240min', win_size=100, stride=1, future=12,
+                                                       label_func='label_3class_return_target', num_classes=3, return_target=0.08, threshold_1=None, threshold_2=None),
 
 
-    'long_1440m_28_10_class3_return_0.1': DatasetType(res_period='1440min', win_size=28, stride=1, future=10,
+
+
+    'long_1440m_28_7_class3_return_0.11': DatasetType(res_period='1440min', win_size=28, stride=1, future=7,
                                                        label_func='label_3class_return_target', num_classes=3,
-                                                       return_target=0.1),
+                                                       return_target=0.11, threshold_1=None, threshold_2=None),
+
+
+
 
     # 2 classes
     'long_1440m_28_4_class2': DatasetType(res_period='1440min', win_size=28, stride=1, future=4,
                                                        label_func='label_2class_return_target', num_classes=2,
-                                                       return_target=0.1), # return_target does not play role here
+                                                       return_target=0.1, threshold_1=None, threshold_2=None), # return_target does not play role here
+
+    # hit max
+    'short_60m_160_8_3_maxhit_0.03_06': DatasetType(res_period='60min', win_size=160, stride=1, future=8,
+                                                     label_func='label_3class_max_hit', num_classes=3,
+                                                     return_target=None, threshold_1=0.03, threshold_2=0.06 )
 }
 

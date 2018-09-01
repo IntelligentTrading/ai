@@ -26,11 +26,18 @@ def _normalize_dataset(X):
     return X
 
 
-def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, future, return_target,res_period):
+def df_to_X_onecoin(data_df, ds_transform):
     '''
     Transform an input ts into array [ examples, time points back fatures (LSTM modules), feature dimension ],
-    Labels can be set to a different
+    Labels computing can be set to a different function
     '''
+    win_size = DATASET_TRANSFORM[ds_transform].win_size
+    stride = DATASET_TRANSFORM[ds_transform].stride
+    label_func = DATASET_TRANSFORM[ds_transform].label_func
+    num_classes = DATASET_TRANSFORM[ds_transform].num_classes
+    future = DATASET_TRANSFORM[ds_transform].future
+    res_period = DATASET_TRANSFORM[ds_transform].res_period
+
     n = len(data_df)
     if (n - win_size) < 0:
         logger.error("   DATASET is smaller then win_size! we need more data")
@@ -53,19 +60,29 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
         data_set[start_example, :, 1] = data_df[start_example:end_example]['volume'].values.reshape([-1, 1])[:, 0]
         data_set[start_example, :, 2] = data_df[start_example:end_example]['price_var'].values.reshape([-1, 1])[:, 0]
         data_set[start_example, :, 3] = data_df[start_example:end_example]['volume_var'].values.reshape([-1, 1])[:, 0]
+        data_set[start_example, :, 4] = data_df[start_example:end_example]['price_max'].values.reshape([-1, 1])[:, 0]
+        data_set[start_example, :, 5] = data_df[start_example:end_example]['price_min'].values.reshape([-1, 1])[:, 0]
         #TODO: add blockchain info here
 
-        # assert X dimensions
 
-        # get price for the prediction period and calculate its moments
-        #prices = data_set[start_example, :, 0]
-        future_prices = data_df[end_example-1 : end_example + future]['price'] # we also nee the last price from example
+        # here we set the future values either to following proce values of price-max values (in case we predict max
+        if label_func == 'label_3class_max_hit':
+            future_values = data_df[end_example-1 : end_example + future]['price_max']
+            threshold_1 = DATASET_TRANSFORM[ds_transform].threshold_1
+            threshold_2 = DATASET_TRANSFORM[ds_transform].threshold_2
+        elif label_func == 'label_3class_min_hit':
+            future_values = data_df[end_example-1 : end_example + future]['price_min']
+            threshold_1 = DATASET_TRANSFORM[ds_transform].threshold_1
+            threshold_2 = DATASET_TRANSFORM[ds_transform].threshold_2
+        else:
+            future_values = data_df[end_example-1 : end_example + future]['price'] # we also need the last price from example
+            threshold_1 = DATASET_TRANSFORM[ds_transform].return_target
 
         #build Y array (labels)
         module = importlib.import_module('src.data.datasets')
         func_obj = getattr(module, label_func)
 
-        labels[start_example, :] = func_obj(future_prices, return_target)
+        labels[start_example, :] = func_obj(future_values, threshold_1, threshold_2)
         # assert the array dimencions
 
         if start_example % 3000 == 0:
@@ -76,10 +93,13 @@ def one_coin_array_from_df(data_df, win_size, stride, label_func, num_classes, f
     return data_set, labels
 
 
-def label_3class_return_target(future_prices, return_target):
+
+
+def label_3class_return_target(future_prices, threshold_1, threshold_2):
     '''
     calculate a dummy class number out of 90 future prices as 0 - same / 1 - up / 2 - down
     '''
+    return_target = threshold_1
     # 0 -same, 1-up, 2 -down
     label_dummy_classes=3
 
@@ -102,10 +122,10 @@ def label_3class_return_target(future_prices, return_target):
 
     return dummy_labels
 
-
-def label_2class_return_target(future_prices, return_target):
+def label_2class_return_target(future_prices, threshold_1, threshold_2):
     # NOTE: return tagret  is ignored here
 
+    return_target = threshold_1
     # 1 - up, - 1 - down
     label_dummy_classes = 2
 
@@ -126,8 +146,41 @@ def label_2class_return_target(future_prices, return_target):
 
     return dummy_labels
 
+def label_3class_max_hit(future_prices, threshold_1, threshold_2):
+    # 0 -same, 1-threshold_1, 2 -threshold_2
+    label_dummy_classes=3
 
-def get_dataset_manycoins_fused(COINS_LIST, db_name, ds_transform):
+    open_price = future_prices[0]
+    close_price = future_prices[-1]
+
+    # min_price = np.min(future_prices)
+    # percent_min = 1 - (open_price - min_price) / open_price
+    max_price = np.max(future_prices)
+    percent_max = (max_price-open_price) / open_price
+
+
+    if  percent_max > threshold_2:
+        label = 2
+    elif percent_max > threshold_1:
+        label = 1
+    else:
+        label = 0
+
+
+    dummy_labels = np.zeros([1,label_dummy_classes]).astype(int)
+
+    # 0 - same / 1 - up / 2 - down
+    if label == 0:
+        dummy_labels[0, 0] = int(1)
+    elif label == 1:
+        dummy_labels[0, 1] = int(1)
+    elif label == 2:
+        dummy_labels[0, 2] = int(1)
+
+    return dummy_labels
+
+
+def combine_all_coins(COINS_LIST, db_name, ds_transform):
     '''
     Build the a full dataset X, Y by fusind all datasets of each coin from COIN_LIST
     - for each pair get ts of price and volume, calculate variance and build a df [time, price, vol, price_var, vol_var]
@@ -136,18 +189,6 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, ds_transform):
     '''
 
     res_period = DATASET_TRANSFORM[ds_transform].res_period
-
-    # comment cache because validation dataset is also cached
-    # return from cache if files exists
-    # ds_name = ds_transform
-    # fname_x = 'X_'+ ds_name + '.pkl.npy'
-    # fname_y = 'Y_' + ds_name + '.pkl.npy'
-    # if os.path.isfile("data/processed/" + fname_x) and os.path.isfile("data/processed/" + fname_y):
-    #     X = np.load("data/processed/" + fname_x)
-    #     Y = np.load("data/processed/" + fname_y)
-    #     logger.info("    ... got X, Y datasets from cache:")
-    #     logger.info("        Y statistics: same= " + str(sum(Y[:, 0])) + ' | UP= ' + str(sum(Y[:, 1])) + ' | DOWN= ' + str(sum(Y[:, 2])))
-    #     return X, Y
 
     X = []  # (147319, 200, 4) - 4 is price, volume, price_var, volume_var
     Y = []  # (147319, 3)  - 3 is number of classes
@@ -160,7 +201,7 @@ def get_dataset_manycoins_fused(COINS_LIST, db_name, ds_transform):
 
         # convert this df into a array of shape of (147319, 200, 4) = (examples, time_back, features)
         # all parameters of data transformation are in data.settings
-        X_train_one, Y_train_one = one_coin_array_from_df(data_df=data_df, **DATASET_TRANSFORM[ds_transform]._asdict()  )
+        X_train_one, Y_train_one = df_to_X_onecoin(data_df, ds_transform)
         del data_df
 
         # pile up into one array
