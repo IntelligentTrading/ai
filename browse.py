@@ -22,6 +22,7 @@ if __name__ == '__main__':
     rnn_train_basic.add_variant(variant_name='server_long_2class')
 
     rnn_train_basic.add_variant(variant_name='max_hit')
+    rnn_train_basic.add_variant(variant_name='max_hit_2class')
 
     rnn_train_basic.browse()
 

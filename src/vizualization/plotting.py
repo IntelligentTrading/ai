@@ -29,12 +29,17 @@ def plot_class_colored_prediction(model_summary_str, final_val_scores, price, y_
     color_label_1 = 'green'
     color_label_2 = 'red'
     if DATASET_TRANSFORM[ds_transform].label_func == 'label_3class_max_hit':
-        color_label_1 = 'green'
-        color_label_2 = 'lime'
+        color_label_1 = 'lime'
+        color_label_2 = 'magenta'
+
+    if DATASET_TRANSFORM[ds_transform].label_func == 'label_2class_max_hit':
+        color_label_1 = 'magenta'
+        color_label_2 = 'yellow'
+
 
     # now color according to prediction
     for p in y_predicted:
-        idx = np.argmax(p) - (num_classes-3)
+        idx = np.argmax(p)
         if idx == 1:
             color = color_label_1
         elif idx == 2:
@@ -45,7 +50,7 @@ def plot_class_colored_prediction(model_summary_str, final_val_scores, price, y_
 
 
     for p in y_true:
-        idx = np.argmax(p) - (num_classes-3)
+        idx = np.argmax(p)
         if idx == 1:
             color = color_label_1
         elif idx == 2:

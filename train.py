@@ -125,26 +125,47 @@ if __name__ == '__main__':
     ##################################################
 
 
-    ################## MAX HIT variant -  ###################
-    ds_transform_max_03_06 = 'short_60m_160_8_3_maxhit_0.03_06'
+    ################## MAX HIT 3 class variant -  ###################
+    ds_transform_max_hit = 'short_60m_168_4_maxhit3cl_0.02_04'
     lstm_layers_maxhit = [
-        {'layer': 'input', 'units': 128, 'dropout': 0.01},
-        {'layer': 'l2', 'units': 256, 'dropout': 0.01},
-        {'layer': 'l3', 'units': 256, 'dropout': 0.01},
+        {'layer': 'input', 'units': 168, 'dropout': 0.01},
+        {'layer': 'l2', 'units': 128, 'dropout': 0.01},
+        {'layer': 'l3', 'units': 128, 'dropout': 0.01},
         {'layer': 'l4', 'units': 128, 'dropout': 0.01},
-        {'layer': 'last', 'units': 64, 'dropout': 0.01}
+        {'layer': 'l5', 'units': 128, 'dropout': 0.01},
+        {'layer': 'last', 'units': 32, 'dropout': 0.01}
     ]
 
     variant_maxhit = rnn_train_basic.add_variant(
         variant_name='max_hit',  # comes from a decorator
-        ds_transform=ds_transform_max_03_06,
+        ds_transform=ds_transform_max_hit,
         lstm_layers=lstm_layers_maxhit,
         lr=0.0008,
-        batch_size=512,
-        epochs=1
+        batch_size=128,
+        epochs=4
     )
     ##################################################
 
+    ################## MAX HIT 2 class -  ###################
+    ds_transform_max_hit_2cl = 'short_60m_168_4_maxhit2cl_0.03'
+    lstm_layers_maxhit_2cl = [
+        {'layer': 'input', 'units': 168, 'dropout': 0.01},
+        {'layer': 'l2', 'units': 128, 'dropout': 0.01},
+        {'layer': 'l3', 'units': 128, 'dropout': 0.01},
+        {'layer': 'l4', 'units': 128, 'dropout': 0.01},
+        {'layer': 'l5', 'units': 128, 'dropout': 0.01},
+        {'layer': 'last', 'units': 32, 'dropout': 0.01}
+    ]
+
+    variant_maxhit_2cl = rnn_train_basic.add_variant(
+        variant_name='max_hit_2class',  # comes from a decorator
+        ds_transform=ds_transform_max_hit_2cl,
+        lstm_layers=lstm_layers_maxhit_2cl,
+        lr=0.001,
+        batch_size=64,
+        epochs=3
+    )
+    ##################################################
 
     ###################################################
     ############### RUN variants ######################
@@ -174,8 +195,11 @@ if __name__ == '__main__':
     # shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
 
     ################  MAX MIN net ###################
-    record_maxhit = variant_maxhit.run(keep_record=True)
-    shutil.move("models/lstm_" + ds_transform_max_03_06 + ".h5", record_maxhit.get_dir())
+    # record_maxhit = variant_maxhit.run(keep_record=True)
+    # shutil.move("models/lstm_" + ds_transform_max_hit + ".h5", record_maxhit.get_dir())
+
+    record_maxhit_2cl = variant_maxhit_2cl.run(keep_record=True)
+    shutil.move("models/lstm_" + ds_transform_max_hit_2cl + ".h5", record_maxhit_2cl.get_dir())
 
 
 

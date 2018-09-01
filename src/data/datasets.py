@@ -74,9 +74,14 @@ def df_to_X_onecoin(data_df, ds_transform):
             future_values = data_df[end_example-1 : end_example + future]['price_min']
             threshold_1 = DATASET_TRANSFORM[ds_transform].threshold_1
             threshold_2 = DATASET_TRANSFORM[ds_transform].threshold_2
+        elif label_func == 'label_2class_max_hit':
+            future_values = data_df[end_example - 1: end_example + future]['price_min']
+            threshold_1 = DATASET_TRANSFORM[ds_transform].threshold_1
+            threshold_2 = None
         else:
             future_values = data_df[end_example-1 : end_example + future]['price'] # we also need the last price from example
             threshold_1 = DATASET_TRANSFORM[ds_transform].return_target
+            threshold_2 = None
 
         #build Y array (labels)
         module = importlib.import_module('src.data.datasets')
@@ -166,7 +171,6 @@ def label_3class_max_hit(future_prices, threshold_1, threshold_2):
     else:
         label = 0
 
-
     dummy_labels = np.zeros([1,label_dummy_classes]).astype(int)
 
     # 0 - same / 1 - up / 2 - down
@@ -176,6 +180,34 @@ def label_3class_max_hit(future_prices, threshold_1, threshold_2):
         dummy_labels[0, 1] = int(1)
     elif label == 2:
         dummy_labels[0, 2] = int(1)
+
+    return dummy_labels
+
+def label_2class_max_hit(future_prices, threshold_1, threshold_2):
+    # 0 -same, 1-threshold_1, 2 -threshold_2
+    label_dummy_classes=2
+
+    open_price = future_prices[0]
+    close_price = future_prices[-1]
+
+    # min_price = np.min(future_prices)
+    # percent_min = 1 - (open_price - min_price) / open_price
+    max_price = np.max(future_prices)
+    percent_max = (max_price-open_price) / open_price
+
+    if percent_max > threshold_1:
+        label = 1
+    else:
+        label = 0
+
+    dummy_labels = np.zeros([1,label_dummy_classes]).astype(int)
+
+    # 0 - same / 1 - up / 2 - down
+    if label == 0:
+        dummy_labels[0, 0] = int(1)
+    elif label == 1:
+        dummy_labels[0, 1] = int(1)
+
 
     return dummy_labels
 
