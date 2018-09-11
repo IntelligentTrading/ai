@@ -171,7 +171,7 @@ if __name__ == '__main__':
         lstm_layers=lstm_layers_maxhit_2cl,
         lr=0.0015,
         batch_size=64,
-        epochs=1
+        epochs=10
     )
     ##################################################
 
