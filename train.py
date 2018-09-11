@@ -29,7 +29,8 @@ if __name__ == '__main__':
         {'layer': 'l2', 'units': 64, 'dropout': 0.05},
         {'layer': 'l3', 'units': 32, 'dropout': 0.03},
         {'layer': 'l4', 'units': 32, 'dropout': 0.02},
-        {'layer': 'last', 'units': 16, 'dropout': 0.001}
+        {'layer': 'last', 'units': 16, 'dropout': 0.001},
+        {'layer': 'dense', 'activation': 'softmax'}
     ]
     variant_local_short = rnn_train_basic.add_variant(
         variant_name='local_short',
@@ -50,7 +51,8 @@ if __name__ == '__main__':
         {'layer': 'l2', 'units': 128, 'dropout': 0.01},
         {'layer': 'l3', 'units': 64, 'dropout': 0.01},
         {'layer': 'l4', 'units': 64, 'dropout': 0.01},
-        {'layer': 'last', 'units': 32, 'dropout': 0.01}
+        {'layer': 'last', 'units': 32, 'dropout': 0.01},
+        {'layer': 'dense', 'activation': 'softmax'}
     ]
     variant_short = rnn_train_basic.add_variant(
         variant_name='server_short',  # comes from a decorator
@@ -70,7 +72,8 @@ if __name__ == '__main__':
         {'layer': 'l2', 'units': 64, 'dropout': 0.01},
         {'layer': 'l3', 'units': 64, 'dropout': 0.01},
         {'layer': 'l4', 'units': 32, 'dropout': 0.01},
-        {'layer': 'last', 'units': 32, 'dropout': 0.01}
+        {'layer': 'last', 'units': 32, 'dropout': 0.01},
+        {'layer': 'dense', 'activation': 'softmax'}
     ]
     variant_medium = rnn_train_basic.add_variant(
         variant_name='server_medium',  # comes from a decorator
@@ -89,7 +92,8 @@ if __name__ == '__main__':
         {'layer': 'l2', 'units': 64, 'dropout': 0.01},
         {'layer': 'l3', 'units': 64, 'dropout': 0.01},
         {'layer': 'l4', 'units': 64, 'dropout': 0.01},
-        {'layer': 'last', 'units': 32, 'dropout': 0.01}
+        {'layer': 'last', 'units': 32, 'dropout': 0.01},
+        {'layer': 'dense', 'activation': 'softmax'}
     ]
 
     variant_long = rnn_train_basic.add_variant(
@@ -110,7 +114,8 @@ if __name__ == '__main__':
         {'layer': 'l2', 'units': 256, 'dropout': 0.01},
         {'layer': 'l3', 'units': 256, 'dropout': 0.01},
         {'layer': 'l4', 'units': 128, 'dropout': 0.01},
-        {'layer': 'last', 'units': 64, 'dropout': 0.01}
+        {'layer': 'last', 'units': 64, 'dropout': 0.01},
+        {'layer': 'dense', 'activation': 'sifmoid'}
     ]
 
     variant_long_2class = rnn_train_basic.add_variant(
@@ -133,7 +138,8 @@ if __name__ == '__main__':
         {'layer': 'l3', 'units': 128, 'dropout': 0.01},
         {'layer': 'l4', 'units': 128, 'dropout': 0.01},
         {'layer': 'l5', 'units': 128, 'dropout': 0.01},
-        {'layer': 'last', 'units': 32, 'dropout': 0.01}
+        {'layer': 'last', 'units': 32, 'dropout': 0.01},
+        {'layer': 'dense', 'activation': 'softmax'}
     ]
 
     variant_maxhit = rnn_train_basic.add_variant(
@@ -147,23 +153,25 @@ if __name__ == '__main__':
     ##################################################
 
     ################## MAX HIT 2 class -  ###################
-    ds_transform_max_hit_2cl = 'short_60m_168_4_maxhit2cl_0.03'
+    ds_transform_max_hit_2cl = 'short_60m_168_8_maxhit2cl_0.04'
     lstm_layers_maxhit_2cl = [
-        {'layer': 'input', 'units': 168, 'dropout': 0.01},
-        {'layer': 'l2', 'units': 128, 'dropout': 0.01},
-        {'layer': 'l3', 'units': 128, 'dropout': 0.01},
-        {'layer': 'l4', 'units': 128, 'dropout': 0.01},
-        {'layer': 'l5', 'units': 128, 'dropout': 0.01},
-        {'layer': 'last', 'units': 32, 'dropout': 0.01}
+        {'layer': 'input', 'units': 200, 'dropout': 0.001},
+        {'layer': 'l2', 'units': 128, 'dropout': 0.001},
+        {'layer': 'l3', 'units': 128, 'dropout': 0.001},
+        {'layer': 'l4', 'units': 128, 'dropout': 0.001},
+        {'layer': 'l5', 'units': 64, 'dropout': 0.001},
+        {'layer': 'l6', 'units': 64, 'dropout': 0.001},
+        {'layer': 'last', 'units': 32, 'dropout': 0.01},
+        {'layer': 'dense', 'activation': 'sigmoid'}
     ]
 
     variant_maxhit_2cl = rnn_train_basic.add_variant(
         variant_name='max_hit_2class',  # comes from a decorator
         ds_transform=ds_transform_max_hit_2cl,
         lstm_layers=lstm_layers_maxhit_2cl,
-        lr=0.001,
+        lr=0.0015,
         batch_size=64,
-        epochs=3
+        epochs=1
     )
     ##################################################
 

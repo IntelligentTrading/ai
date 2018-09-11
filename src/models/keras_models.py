@@ -79,15 +79,23 @@ def build_lstm_model(win_size_timesteps, data_dim,num_classes, layers_dict, lr):
             model.add(LSTM(layer['units'], return_sequences=True, input_shape=(win_size_timesteps, data_dim), dropout=layer['dropout']))
         elif layer['layer'] == 'last':
             model.add(LSTM(layer['units'], dropout=layer['dropout']))  # return a single vector of dimension 32
+        elif layer['layer'] == 'dense':
+            activation = layer['activation']
+            model.add(Dense(num_classes, activation=activation))
         else:
             model.add(LSTM(layer['units'], return_sequences=True, dropout=layer['dropout']))
 
-    model.add(Dense(num_classes, activation='softmax'))
+    #model.add(Dense(num_classes, activation='softmax'))
 
     optimizer = adagrad(lr)
 
+    if activation == 'softmax':
+        loss = 'categorical_crossentropy'
+    elif activation == 'sigmoid':
+        loss = 'binary_crossentropy'
+
     model.compile(
-        loss='categorical_crossentropy',
+        loss=loss,
         optimizer=optimizer,
         metrics=['accuracy'] #, metrics.categorical_accuracy]
     )
