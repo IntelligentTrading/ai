@@ -231,6 +231,9 @@ def combine_all_coins(COINS_LIST, db_name, ds_transform):
         # retrieve a time series df from DB as [time,price,volume, price_var, volume_var]
         data_df = get_combined_cleaned_onecoin_df(db_name, transaction_coin, counter_coin, res_period)
 
+        # TODO: cut all old data from period of high volatility
+        data_df = data_df.loc['2018-02-01':]
+
         # convert this df into a array of shape of (147319, 200, 4) = (examples, time_back, features)
         # all parameters of data transformation are in data.settings
         X_train_one, Y_train_one = df_to_X_onecoin(data_df, ds_transform)

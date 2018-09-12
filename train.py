@@ -198,9 +198,9 @@ if __name__ == '__main__':
     # shutil.move("models/lstm_" + ds_transform_server_medium + ".h5", record_server_medium.get_dir())
 
 
-    # logger.info('================ start short training  ===============')
-    # record_server_short = variant_short.run(keep_record=True)
-    # shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
+    logger.info('================ start short training  ===============')
+    record_server_short = variant_short.run(keep_record=True)
+    shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
 
     ################  MAX MIN net ###################
     # record_maxhit = variant_maxhit.run(keep_record=True)
