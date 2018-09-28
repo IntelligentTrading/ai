@@ -153,14 +153,14 @@ if __name__ == '__main__':
     ##################################################
 
     ################## MAX HIT 2 class -  ###################
-    ds_transform_max_hit_2cl = 'short_60m_168_8_maxhit2cl_0.04'
+    ds_transform_max_hit_2cl = 'short_60m_168_8_maxhit2cl_0.03'
     lstm_layers_maxhit_2cl = [
-        {'layer': 'input', 'units': 200, 'dropout': 0.001},
-        {'layer': 'l2', 'units': 128, 'dropout': 0.001},
-        {'layer': 'l3', 'units': 128, 'dropout': 0.001},
-        {'layer': 'l4', 'units': 128, 'dropout': 0.001},
-        {'layer': 'l5', 'units': 64, 'dropout': 0.001},
-        {'layer': 'l6', 'units': 64, 'dropout': 0.001},
+        {'layer': 'input', 'units': 200, 'dropout': 0.01},
+        {'layer': 'l2', 'units': 128, 'dropout': 0.01},
+        {'layer': 'l3', 'units': 128, 'dropout': 0.01},
+        {'layer': 'l4', 'units': 128, 'dropout': 0.01},
+        {'layer': 'l5', 'units': 64, 'dropout': 0.01},
+        {'layer': 'l6', 'units': 64, 'dropout': 0.01},
         {'layer': 'last', 'units': 32, 'dropout': 0.01},
         {'layer': 'dense', 'activation': 'sigmoid'}
     ]
@@ -171,7 +171,7 @@ if __name__ == '__main__':
         lstm_layers=lstm_layers_maxhit_2cl,
         lr=0.0015,
         batch_size=64,
-        epochs=12
+        epochs=1
     )
     ##################################################
 
@@ -198,9 +198,9 @@ if __name__ == '__main__':
     # shutil.move("models/lstm_" + ds_transform_server_medium + ".h5", record_server_medium.get_dir())
 
 
-    logger.info('================ start short training  ===============')
-    record_server_short = variant_short.run(keep_record=True)
-    shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
+    # logger.info('================ start short training  ===============')
+    # record_server_short = variant_short.run(keep_record=True)
+    # shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
 
     ################  MAX MIN net ###################
     # record_maxhit = variant_maxhit.run(keep_record=True)

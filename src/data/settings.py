@@ -87,6 +87,10 @@ DATASET_TRANSFORM = {
                                                      return_target=None, threshold_1=0.04, threshold_2=None ),
 
 
+    'short_60m_168_8_maxhit2cl_0.02': DatasetType(res_period='60min', win_size=168, stride=1, future=8,
+                                                     label_func='label_2class_max_hit', num_classes=2,
+                                                     return_target=None, threshold_1=0.02, threshold_2=None ),
+
     'short_60m_168_8_maxhit2cl_0.03': DatasetType(res_period='60min', win_size=168, stride=1, future=8,
                                                      label_func='label_2class_max_hit', num_classes=2,
                                                      return_target=None, threshold_1=0.03, threshold_2=None ),
