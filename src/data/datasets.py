@@ -151,6 +151,7 @@ def label_2class_return_target(future_prices, threshold_1, threshold_2):
 
     return dummy_labels
 
+
 def label_3class_max_hit(future_prices, threshold_1, threshold_2):
     # 0 -same, 1-threshold_1, 2 -threshold_2
     label_dummy_classes=3
@@ -183,8 +184,12 @@ def label_3class_max_hit(future_prices, threshold_1, threshold_2):
 
     return dummy_labels
 
+
 def label_2class_max_hit(future_prices, threshold_1, threshold_2):
-    # 0 -same, 1-threshold_1, 2 -threshold_2
+    # create a label set as follows:
+    # label 1 (maxhit) if anytime within future_prices the price max value exceeded threshold_1 value
+    # (i.e there was an opportunity to trade
+    # labels: 0 -same, 1-threshold_1
     label_dummy_classes=2
 
     open_price = future_prices[0]
@@ -208,8 +213,11 @@ def label_2class_max_hit(future_prices, threshold_1, threshold_2):
     elif label == 1:
         dummy_labels[0, 1] = int(1)
 
-
     return dummy_labels
+
+
+
+
 
 
 def combine_all_coins(COINS_LIST, db_name, ds_transform):

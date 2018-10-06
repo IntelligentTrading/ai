@@ -68,10 +68,15 @@ DATASET_TRANSFORM = {
                                                        label_func='label_2class_return_target', num_classes=2,
                                                        return_target=0.1, threshold_1=None, threshold_2=None), # return_target does not play role here
 
+
+
     # hit max two thesholds
     'short_60m_168_4_maxhit3cl_0.02_04': DatasetType(res_period='60min', win_size=168, stride=1, future=4,
                                                      label_func='label_3class_max_hit', num_classes=3,
                                                      return_target=None, threshold_1=0.02, threshold_2=0.04),
+
+
+
 
     # hit max one theshold
     'short_60m_168_4_maxhit2cl_0.02': DatasetType(res_period='60min', win_size=168, stride=1, future=4,
@@ -101,6 +106,11 @@ DATASET_TRANSFORM = {
 
     'short_60m_168_8_maxhit2cl_0.05': DatasetType(res_period='60min', win_size=168, stride=1, future=8,
                                                      label_func='label_2class_max_hit', num_classes=2,
-                                                     return_target=None, threshold_1=0.05, threshold_2=None )
+                                                     return_target=None, threshold_1=0.05, threshold_2=None ),
+
+
+    'medium_240m_100_7_maxhit2cl_0.1': DatasetType(res_period='240min', win_size=100, stride=1, future=7,
+                                                     label_func='label_2class_max_hit', num_classes=2,
+                                                     return_target=None, threshold_1=0.1, threshold_2=None )
 }
 

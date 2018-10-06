@@ -107,7 +107,7 @@ if __name__ == '__main__':
     ##################################################
 
 
-    ################## 2 classЖ LONG server variant -  ###################
+    ################## 2 class LONG server variant -  ###################
     ds_transform_server_long_2cl = 'long_1440m_28_4_class2'
     lstm_layers_server_long = [
         {'layer': 'input', 'units': 128, 'dropout': 0.01},
@@ -130,6 +130,8 @@ if __name__ == '__main__':
     ##################################################
 
 
+
+
     ################## MAX HIT 3 class variant -  ###################
     ds_transform_max_hit = 'short_60m_168_4_maxhit3cl_0.02_04'
     lstm_layers_maxhit = [
@@ -150,11 +152,12 @@ if __name__ == '__main__':
         batch_size=128,
         epochs=4
     )
-    ##################################################
+
+
 
     ################## MAX HIT 2 class -  ###################
-    ds_transform_max_hit_2cl = 'short_60m_168_8_maxhit2cl_0.03'
-    lstm_layers_maxhit_2cl = [
+    ds_transform_max_hit_2cl_short = 'short_60m_168_8_maxhit2cl_0.03'
+    lstm_layers_maxhit_2cl_short = [
         {'layer': 'input', 'units': 200, 'dropout': 0.01},
         {'layer': 'l2', 'units': 128, 'dropout': 0.01},
         {'layer': 'l3', 'units': 128, 'dropout': 0.01},
@@ -165,15 +168,43 @@ if __name__ == '__main__':
         {'layer': 'dense', 'activation': 'sigmoid'}
     ]
 
-    variant_maxhit_2cl = rnn_train_basic.add_variant(
-        variant_name='max_hit_2class',  # comes from a decorator
-        ds_transform=ds_transform_max_hit_2cl,
-        lstm_layers=lstm_layers_maxhit_2cl,
+    variant_maxhit_2cl_short = rnn_train_basic.add_variant(
+        variant_name='max_hit_2class_short',  # comes from a decorator
+        ds_transform=ds_transform_max_hit_2cl_short,
+        lstm_layers=lstm_layers_maxhit_2cl_short,
         lr=0.0015,
         batch_size=64,
-        epochs=1
+        epochs=5
     )
+
+    ds_transform_max_hit_2cl_medium = 'medium_240m_100_7_maxhit2cl_0.1'
+    lstm_layers_maxhit_2cl_medium = [
+        {'layer': 'input', 'units': 200, 'dropout': 0.01},
+        {'layer': 'l2', 'units': 128, 'dropout': 0.01},
+        {'layer': 'l3', 'units': 128, 'dropout': 0.01},
+        {'layer': 'l4', 'units': 128, 'dropout': 0.01},
+        {'layer': 'l5', 'units': 64, 'dropout': 0.01},
+        {'layer': 'l6', 'units': 64, 'dropout': 0.01},
+        {'layer': 'last', 'units': 32, 'dropout': 0.01},
+        {'layer': 'dense', 'activation': 'sigmoid'}
+    ]
+
+    variant_maxhit_2cl_medium = rnn_train_basic.add_variant(
+        variant_name='max_hit_2class_medium',  # comes from a decorator
+        ds_transform=ds_transform_max_hit_2cl_medium,
+        lstm_layers=lstm_layers_maxhit_2cl_medium,
+        lr=0.0015,
+        batch_size=64,
+        epochs=5
+    )
+
+
+
     ##################################################
+
+
+
+
 
     ###################################################
     ############### RUN variants ######################
@@ -202,14 +233,17 @@ if __name__ == '__main__':
     # record_server_short = variant_short.run(keep_record=True)
     # shutil.move("models/lstm_" + ds_transform_server_short + ".h5", record_server_short.get_dir())
 
+
+
     ################  MAX MIN net ###################
     # record_maxhit = variant_maxhit.run(keep_record=True)
     # shutil.move("models/lstm_" + ds_transform_max_hit + ".h5", record_maxhit.get_dir())
 
-    record_maxhit_2cl = variant_maxhit_2cl.run(keep_record=True)
-    shutil.move("models/lstm_" + ds_transform_max_hit_2cl + ".h5", record_maxhit_2cl.get_dir())
+    record_maxhit_2cl_short = variant_maxhit_2cl_short.run(keep_record=True)
+    shutil.move("models/lstm_" + ds_transform_max_hit_2cl_short + ".h5", record_maxhit_2cl_short.get_dir())
 
-
+    record_maxhit_2cl_medium = variant_maxhit_2cl_medium.run(keep_record=True)
+    shutil.move("models/lstm_" + ds_transform_max_hit_2cl_medium + ".h5", record_maxhit_2cl_medium.get_dir())
 
 
 
