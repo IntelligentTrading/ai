@@ -1,4 +1,4 @@
-# ittai
+# ai
 A package to systematically train/retrain networks.
 Uses artemis package, which allows to keep track of all experiments which were ran, then retrieve their results.
 
